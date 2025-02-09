@@ -1,0 +1,48 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="Button.Navigation">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <!-- <Setter Property="BorderThickness" Value="0"/> -->
+    </Style>
+    
+    <Style Selector="TextBox.Navigation">
+        <Setter Property="Margin" Value="5 0"/>
+        <Setter Property="Height" Value="40"/>
+        <!-- <Setter Property="BorderThickness" Value="0"/> -->
+        <Setter Property="AcceptsReturn" Value="False"/>
+        <Setter Property="AcceptsTab" Value="False"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    
+    <Style Selector="DropDownButton.Navigation">
+        <Setter Property="Height" Value="40"/>
+        <!-- <Setter Property="BorderThickness" Value="0"/> -->
+    </Style>
+    
+    <Style Selector="ListBox.Viewer">
+        <Setter Property="Margin" Value="0 5 5 0"/>
+        
+    </Style>
+    <Style Selector="Expander.Viewer">
+        <Setter Property="Margin" Value="0 5 "/>
+        
+    </Style>
+    
+    <Style Selector="DataGrid.Viewer">
+        <Setter Property="CornerRadius" Value="5 5 0 0"/>
+        <Style Selector="^ DataGridCell:current /template/ Grid#FocusVisual"> 
+            <Setter Property="IsVisible" Value="false" /> 
+        </Style> 
+    </Style>
+    
+</Styles>

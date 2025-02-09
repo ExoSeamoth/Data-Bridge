@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Data_Bridge.ViewModels"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Data_Bridge.Views"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="560"
+        x:Class="Data_Bridge.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        MinWidth="650" MinHeight="450"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Data_Bridge"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <ui:TabView VerticalAlignment="Stretch"
+                HorizontalAlignment="Stretch"
+                TabItems="{Binding Tabs}"
+                SelectedItem="{Binding SelectedTab}"
+                TabWidthMode="Compact"
+                AddTabButtonClick="TabView_OnAddTabButtonClick"
+                TabCloseRequested="TabView_OnTabCloseRequested">
+        <ui:TabView.TabItemTemplate>
+            <DataTemplate DataType="{x:Type vm:ExplorerViewModel}">
+                <ui:TabViewItem Header="{Binding CurrentDirectoryFullPath, Converter={StaticResource FullPathToCurrentFolderConverter}}"
+                                IconSource="{StaticResource FolderIcon}"
+                                ToolTip.Tip="{Binding CurrentDirectoryFullPath}">
+                    <ui:TabViewItem.Content>
+                        <views:ExplorerView DataContext="{Binding $parent[ui:TabViewItem].DataContext}" />
+                    </ui:TabViewItem.Content>
+                </ui:TabViewItem>
+            </DataTemplate>
+        </ui:TabView.TabItemTemplate>
+
+
+        <ui:TabView.TabStripHeader>
+            <Button VerticalAlignment="Stretch"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    HorizontalAlignment="Stretch"
+                    ToolTip.Tip="Сменить сервер"
+                    IsHitTestVisible="True"
+                    Click="Button_OnClick">
+                <ui:SymbolIcon Symbol="Remote" />
+            </Button>
+        </ui:TabView.TabStripHeader>
+        <ui:TabView.TabStripFooter>
+            <StackPanel Background="Transparent" PointerPressed="Drag_Window_Event" Height="40" MinWidth="140" />
+        </ui:TabView.TabStripFooter>
+    </ui:TabView>
+
+
+    <Window.Styles>
+        <StyleInclude Source="/Styles/MainWindowStyles.axaml" />
+    </Window.Styles>
+</Window>

@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <!-- Add Resources Here -->
+    <ui:BitmapIconSource x:Key="FolderIcon" UriSource="avares://Data Bridge/Assets/Icons/folder.png"/>
+    <ui:BitmapIconSource x:Key="Home" UriSource="avares://Data Bridge/Assets/Icons/home.png"/>
+    <ui:BitmapIconSource x:Key="File" UriSource="avares://Data Bridge/Assets/Icons/file.png"/>
+    <ui:BitmapIconSource x:Key="RemoteDesktop" UriSource="avares://Data Bridge/Assets/Icons/remote-desktop.png"/>
+    <ui:BitmapIconSource x:Key="SymlinkFile" UriSource="avares://Data Bridge/Assets/Icons/symlink-file.png"/>
+</ResourceDictionary>

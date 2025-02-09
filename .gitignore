@@ -1,0 +1,49 @@
+﻿# Ignore Rider-specific files
+.idea/
+*.sln.iml
+
+# Ignore build outputs
+bin/
+obj/
+*.pdb
+*.ilk
+*.obj
+*.exe
+*.dll
+*.log
+*.log.*
+*.cache
+
+# Ignore Avalonia-specific cache and temporary files
+AvaloniaNameGenerator.cache
+Generated/
+
+# Ignore Avalonia Designer files
+**/AvaloniaGenerated.cs
+**/AvaloniaResources.resx
+
+# Ignore NuGet packages
+packages/
+project.lock.json
+project.assets.json
+*.nupkg
+*.snupkg
+.nuget/
+
+# Ignore JetBrains Rider / ReSharper files
+*.DotSettings.user
+resharper/
+
+# Ignore compiled styles and themes
+Themes/Generated/
+
+# Ignore Avalonia XAML preview cache
+.axaml-preview-cache/
+
+# Ignore publish artifacts
+publish/
+app.publish/
+
+# Ignore secrets and user-specific configurations
+secrets.json
+appsettings.*.json

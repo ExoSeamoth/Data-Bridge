@@ -1,0 +1,145 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:vm="clr-namespace:Data_Bridge.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+        x:DataType="vm:ConnectionsWindowViewModel"
+        x:Class="Data_Bridge.Views.ConnectionsWindow"
+        Width="500" Height="400"
+        Title="ConnectionsWindow"
+        WindowStartupLocation="CenterOwner"
+        ExtendClientAreaToDecorationsHint="True"
+        CanResize="False"
+        ShowInTaskbar="False">
+    <Grid ColumnDefinitions="0.65* *" RowDefinitions="30 * Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    Background="Transparent" />
+
+        <ListBox Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
+                 x:Name="SavedConnectionsListBox"
+                 SelectedItem="{Binding SelectedConnection}"
+                 ItemsSource="{Binding SavedConnections}"
+                 SelectionMode="Single"
+                 Margin="5">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="Auto Auto" ColumnDefinitions="Auto *">
+                        <ui:ImageIcon Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                      Source="{StaticResource RemoteDesktop}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding UserName}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding HostName}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    Spacing="5"
+                    Margin="0 5 5 5">
+
+            <StackPanel>
+                <Label Content="Адрес сервера*:" Target="HostInput" />
+                <TextBox x:Name="HostInput" Text="{Binding SelectedConnection.HostName}"
+                         ToolTip.Tip="{Binding $self.Text}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="* Auto">
+                <StackPanel Grid.Column="0">
+                    <Label Content="Пользователь*:" Target="UserInput" />
+                    <TextBox x:Name="UserInput" Text="{Binding SelectedConnection.UserName}"
+                             Margin="0 0 5 0"
+                             ToolTip.Tip="{Binding $self.Text}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Width="125">
+                    <Label Content="Порт:" Target="PortInput" />
+                    <NumericUpDown x:Name="PortInput"
+                                   Value="{Binding SelectedConnection.Port}"
+                                   Minimum="0" Maximum="65535" FormatString="0" />
+                </StackPanel>
+            </Grid>
+
+            <StackPanel>
+                <Label Content="Способ подключения:" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="Пароль"
+                                 IsChecked="{Binding SelectedConnection.SecurityType, Converter={StaticResource SecurityTypeToBoolConverter}, ConverterParameter=Password}" />
+                    <RadioButton Content="SSH-ключ"
+                                 IsChecked="{Binding SelectedConnection.SecurityType, Converter={StaticResource SecurityTypeToBoolConverter}, ConverterParameter=SshKey}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel
+                IsVisible="{Binding SelectedConnection.SecurityType, Converter={StaticResource SecurityTypeToBoolConverter}, ConverterParameter=Password}">
+                <Label Content="Пароль*:" Target="PasswordInput" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBox Grid.Column="0"
+                             x:Name="PasswordInput"
+                             Text="{Binding SelectedConnection.Password}"
+                             PasswordChar="•"
+                             RevealPassword="{Binding IsPressed, ElementName=ViewPassword}"
+                             Margin="0 0 5 0" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            Name="ViewPassword">
+                        <ui:SymbolIcon Symbol="View" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel
+                IsVisible="{Binding SelectedConnection.SecurityType, Converter={StaticResource SecurityTypeToBoolConverter}, ConverterParameter=SshKey}">
+                <Label Content="Путь к ssh-ключу*:" Target="SshPathInput" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBox Grid.Column="0"
+                             x:Name="SshPathInput"
+                             Text="{Binding SelectedConnection.SshKeyPath}"
+                             Margin="0 0 5 0"
+                             ToolTip.Tip="{Binding $self.Text}" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            Click="OpenFileDialog_OnClick">
+                        <ui:SymbolIcon Symbol="OpenFolder" />
+                    </Button>
+                </Grid>
+
+                <Label Content="Фраза-пароль:" Target="PassPhraseInput" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBox Grid.Column="0"
+                             x:Name="PassPhraseInput"
+                             Text="{Binding SelectedConnection.PassPhrase}"
+                             PasswordChar="•"
+                             RevealPassword="{Binding IsPressed, ElementName=ViewPassPhrase}"
+                             Margin="0 0 5 0" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            CommandParameter=""
+                            Name="ViewPassPhrase">
+                        <ui:SymbolIcon Symbol="View" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+
+        <UniformGrid Grid.Row="2" Grid.Column="1" Columns="2"
+                     Margin="0 5 5 10">
+            <Button Content="Сохранить"
+                    HorizontalAlignment="Left" 
+                    Click="SaveConnection_OnClick"/>
+            <Button Content="Подключиться"
+                    x:Name="Connect"
+                    HorizontalAlignment="Right"
+                    Click="ConnectToServer_OnClick"/>
+        </UniformGrid>
+    </Grid>
+
+    <Design.DataContext>
+        <vm:ConnectionsWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <StyleInclude Source="/Styles/ConnectionsWindowStyles.axaml" />
+    </Window.Styles>
+</Window>

@@ -1,0 +1,30 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Data_Bridge.App"
+             xmlns:local="using:Data_Bridge"
+             xmlns:styling="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+             xmlns:converters="clr-namespace:Data_Bridge.Converters"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <styling:FluentAvaloniaTheme PreferUserAccentColor="True" />
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:SecurityTypeToBoolConverter x:Key="SecurityTypeToBoolConverter" />
+            <converters:ISftpItemToIconsConverter x:Key="ISftpItemToIconsConverter" />
+            <converters:FullPathToCurrentFolderConverter x:Key="FullPathToCurrentFolderConverter" />
+            <converters:ISftpItemToSizeConverter x:Key="ISftpItemToSizeConverter" />
+            <converters:ISftpItemToTypeConverter x:Key="ISftpItemToTypeConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="/Assets/Icons/Icons.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
