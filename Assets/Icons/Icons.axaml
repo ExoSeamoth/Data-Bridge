@@ -7,4 +7,5 @@
     <ui:BitmapIconSource x:Key="File" UriSource="avares://Data Bridge/Assets/Icons/file.png"/>
     <ui:BitmapIconSource x:Key="RemoteDesktop" UriSource="avares://Data Bridge/Assets/Icons/remote-desktop.png"/>
     <ui:BitmapIconSource x:Key="SymlinkFile" UriSource="avares://Data Bridge/Assets/Icons/symlink-file.png"/>
+    <ui:BitmapIconSource x:Key="Hdd" UriSource="avares://Data Bridge/Assets/Icons/hdd.png"/>
 </ResourceDictionary>
