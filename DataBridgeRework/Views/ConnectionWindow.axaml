@@ -1,0 +1,127 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:DataBridgeRework.ViewModels"
+        xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+        x:Class="DataBridgeRework.Views.ConnectionWindow"
+        x:DataType="vm:ConnectionWindowViewModel"
+        Width="500" MinHeight="450"
+        CanResize="False"
+        SizeToContent="Height"
+        Title="Управление подключениями"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+
+    <Grid ColumnDefinitions="0.65* *" RowDefinitions="30 * Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                    Background="Transparent" />
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.RowSpan="2"
+                    Margin="5">
+            <ListBox x:Name="SavedConnectionsListBox"
+                     SelectionMode="Single" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1"
+                    Spacing="5"
+                    Margin="0 5 5 5">
+            <StackPanel>
+                <Label Content="Адрес сервера:" Target="HostInput" />
+                <TextBox x:Name="HostInput" Text="{Binding HostName}"
+                         ToolTip.Tip="{Binding $self.Text}" />
+            </StackPanel>
+
+            <Grid ColumnDefinitions="* Auto">
+                <StackPanel Grid.Column="0">
+                    <Label Content="Пользователь:" Target="UserInput" />
+                    <TextBox x:Name="UserInput" Text="{Binding UserName}"
+                             Margin="0 0 5 0"
+                             ToolTip.Tip="{Binding $self.Text}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Width="125">
+                    <Label Content="Порт:" Target="PortInput" />
+                    <NumericUpDown x:Name="PortInput"
+                                   Value="{Binding Port}"
+                                   Minimum="1" Maximum="65535" FormatString="0" />
+                </StackPanel>
+            </Grid>
+
+            <StackPanel>
+                <Label Content="Способ подключения:" />
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="Пароль"
+                                 Name="PasswordCheck"
+                                 IsChecked="{Binding SecurityType, Converter={StaticResource SecurityTypeToBoolConverter}, ConverterParameter=Password}" />
+                    <RadioButton Content="SSH-ключ"
+                                 Name="SshKeyCheck"
+                                 IsChecked="{Binding SecurityType, Converter={StaticResource SecurityTypeToBoolConverter}, ConverterParameter=SshKey}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel
+                IsVisible="{Binding IsChecked, ElementName=PasswordCheck}">
+                <Label Content="Пароль:" Target="PasswordInput" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBox Grid.Column="0"
+                             x:Name="PasswordInput"
+                             Text="{Binding Password}"
+                             PasswordChar="•"
+                             RevealPassword="{Binding IsPressed, ElementName=ViewPassword}"
+                             Margin="0 0 5 0" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            Name="ViewPassword">
+                        <ui:SymbolIcon Symbol="View" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel
+                IsVisible="{Binding IsChecked, ElementName=SshKeyCheck}">
+                <Label Content="Путь к ssh-ключу:" Target="SshPathInput" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBox Grid.Column="0"
+                             x:Name="SshPathInput"
+                             Text="{Binding SshKeyPath}"
+                             Margin="0 0 5 0"
+                             ToolTip.Tip="{Binding $self.Text}" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            Command="{Binding OpenFileDialogCommand}"
+                            CommandParameter="{Binding $parent[Window]}">
+                        <ui:SymbolIcon Symbol="OpenFolder" />
+                    </Button>
+                </Grid>
+
+                <Label Content="Фраза-пароль:" Target="PassPhraseInput" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBox Grid.Column="0"
+                             x:Name="PassPhraseInput"
+                             Text="{Binding SshKeyPhrase}"
+                             PasswordChar="•"
+                             RevealPassword="{Binding IsPressed, ElementName=ViewPassPhrase}"
+                             Margin="0 0 5 0" />
+                    <Button Grid.Column="1" VerticalAlignment="Stretch"
+                            CommandParameter=""
+                            Name="ViewPassPhrase">
+                        <ui:SymbolIcon Symbol="View" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+
+        </StackPanel>
+
+        <UniformGrid Grid.Row="2" Grid.Column="1" Columns="2"
+                     Margin="0 5 5 10">
+            <Button Content="Сохранить"
+                    HorizontalAlignment="Left"
+                    Command="{Binding SaveConnectionCommand}" />
+            <Button Content="Подключиться"
+                    Classes="AccentButton"
+                    HorizontalAlignment="Right"
+                    Command="{Binding ConnectToServerCommand}"
+                    CommandParameter="{Binding $parent[Window]}" />
+        </UniformGrid>
+    </Grid>
+</Window>

@@ -1,0 +1,156 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:DataBridgeRework.ViewModels"
+             xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="515"
+             x:DataType="vm:ExplorerViewModel"
+             x:Class="DataBridgeRework.Views.ExplorerView">
+
+    <Grid ColumnDefinitions="Auto *" RowDefinitions="Auto Auto *">
+        <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+              ColumnDefinitions="Auto *">
+
+            <fa:CommandBar Grid.Column="0"
+                           DefaultLabelPosition="Right">
+                <fa:CommandBar.PrimaryCommands>
+                    <fa:CommandBarButton IconSource="Back" IsCompact="True"
+                                         ToolTip.Tip="{Binding BackHistory.CurrentItem, StringFormat='Назад к &quot;{0}&quot;'}"
+                                         Command="{Binding GoBackCommand}" />
+                    <fa:CommandBarButton IconSource="Forward" IsCompact="True"
+                                         ToolTip.Tip="{Binding ForwardHistory.CurrentItem, StringFormat='Вперёд к &quot;{0}&quot;'}"
+                                         Command="{Binding GoForwardCommand}" />
+                    <fa:CommandBarButton IconSource="Up" IsCompact="True"
+                                         ToolTip.Tip="{Binding ForwardHistory.CurrentItem, StringFormat='Вверх к &quot;{0}&quot;'}"
+                                         Command="{Binding GoUpCommand}" />
+                    <fa:CommandBarButton IconSource="Refresh" IsCompact="True"
+                                         ToolTip.Tip="Обновить" />
+                </fa:CommandBar.PrimaryCommands>
+            </fa:CommandBar>
+
+            <TextBox Classes="CommandBarElement" Grid.Column="1"
+                     Height="10" Margin="0 0 5 0"
+                     AcceptsReturn="False"
+                     AcceptsTab="False"
+                     Text="{Binding CurrentFullPath, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+        </Grid>
+
+        <fa:CommandBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                       DefaultLabelPosition="Right"
+                       Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+            <fa:CommandBar.PrimaryCommands>
+                <fa:CommandBarElementContainer>
+                    <DropDownButton Classes="CommandBarElement">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:SymbolIcon Symbol="Add" />
+                            <Label Content="Создать" />
+                        </StackPanel>
+                        <DropDownButton.Flyout>
+                            <fa:FAMenuFlyout>
+                                <fa:MenuFlyoutItem IconSource="{StaticResource FolderIcon}" Text="Директорию" />
+                                <fa:MenuFlyoutItem IconSource="{StaticResource File}" Text="Файл" />
+                                <fa:MenuFlyoutItem IconSource="{StaticResource SymlinkFile}" Text="Ссылку" />
+                            </fa:FAMenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                </fa:CommandBarElementContainer>
+                <fa:CommandBarSeparator />
+                <fa:CommandBarButton IconSource="Cut" IsCompact="True" />
+                <fa:CommandBarButton IconSource="Copy" IsCompact="True" />
+                <fa:CommandBarButton IconSource="Paste" IsCompact="True" />
+                <fa:CommandBarButton IconSource="Rename" IsCompact="True" />
+                <fa:CommandBarButton IconSource="Delete" IsCompact="True" />
+                <fa:CommandBarButton IconSource="Download" IsCompact="True" />
+                <fa:CommandBarButton IconSource="Add" IsCompact="True" Command="{Binding CreateNewTabCommand}" />
+            </fa:CommandBar.PrimaryCommands>
+        </fa:CommandBar>
+
+        <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="Auto *"
+              Width="180"
+              Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+            <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="5" VerticalAlignment="Stretch">
+                <!-- TODO: Разобраться с ебучим преобразованием поля IsChecked -->
+                <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
+                             Tag="{Binding  UserHomeDirectory}"
+                             IsChecked="{Binding CurrentFullPath, 
+                                         Converter={StaticResource StringsCompareConverter}, 
+                                         ConverterParameter='пидарасы ёбаные блять' }"
+                             ToolTip.Tip="{Binding UserHomeDirectory}">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <fa:IconSourceElement Height="16" Width="16"
+                                              IconSource="{StaticResource Home}" />
+                        <TextBlock Text="Домашняя директория"
+                                   Padding="0 0 10 0"
+                                   MaxLines="1"
+                                   Width="{Binding $parent[StackPanel].Bounds.Width}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </RadioButton>
+
+                <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
+                             IsChecked="{Binding CurrentFullPath,
+                                         Converter={StaticResource StringsCompareConverter},
+                                         ConverterParameter='/' }"
+                             ToolTip.Tip="Корневая директория">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <fa:IconSourceElement Height="16" Width="16"
+                                              IconSource="{StaticResource Hdd}" />
+                        <TextBlock Text="Корневая директория"
+                                   Padding="0 0 10 0"
+                                   MaxLines="1"
+                                   Width="{Binding $parent[StackPanel].Bounds.Width}"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </RadioButton>
+
+                <Separator Margin="15 5" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
+                <fa:ItemsRepeater ItemsSource="{Binding Bookmarks}">
+                    <fa:ItemsRepeater.Layout>
+                        <fa:StackLayout Orientation="Vertical" Spacing="5" />
+                    </fa:ItemsRepeater.Layout>
+                    <fa:ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="system:String">
+                            <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
+                                         ToolTip.Tip="{Binding .}">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <fa:IconSourceElement Height="16" Width="16"
+                                                          IconSource="{StaticResource FolderIcon}" />
+                                    <TextBlock
+                                        Text="{Binding ., Converter={StaticResource FullPathToFolderNameConverter}}"
+                                        Padding="0 0 10 0"
+                                        MaxLines="1"
+                                        Width="{Binding $parent[StackPanel].Bounds.Width}"
+                                        TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </RadioButton>
+                        </DataTemplate>
+                    </fa:ItemsRepeater.ItemTemplate>
+                </fa:ItemsRepeater>
+            </ScrollViewer>
+        </Grid>
+
+        <Border Grid.Row="2" Grid.Column="1"
+                Padding="10 5 5 0"
+                Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+            <Border CornerRadius="5 5 0 0"
+                    ClipToBounds="True">
+                <DataGrid Classes="FilesPresenter"
+                          ItemsSource="{Binding Files}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding Name}" />
+                        <DataGridTextColumn Header="Дата изменения" Binding="{Binding LastWriteTime}" />
+                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" />
+                        <DataGridTextColumn Header="Размер" Binding="{Binding Size}" />
+                        <DataGridTextColumn Header="Права доступа" Binding="{Binding Permissions}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Border>
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <!-- Add Resources Here -->
+    <!-- <fa:ImageIconSource x:Key="FolderIcon" Source="{SvgImage avares://DataBridgeRework/Assets/Icons/folder.svg}" /> -->
+    <fa:ImageIconSource x:Key="FolderIcon" Source="/Assets/Icons/folder.png" />
+    <fa:ImageIconSource x:Key="Home" Source="/Assets/Icons/home.png" />
+    <fa:ImageIconSource x:Key="File" Source="/Assets/Icons/file.png" />
+    <fa:ImageIconSource x:Key="RemoteDesktop" Source="/Assets/Icons/remote-desktop.png" />
+    <fa:ImageIconSource x:Key="SymlinkFile" Source="/Assets/Icons/symlink-file.png" />
+    <fa:ImageIconSource x:Key="Hdd" Source="/Assets/Icons/hdd.png" />
+</ResourceDictionary>

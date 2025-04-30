@@ -1,0 +1,270 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+            <Grid RowDefinitions="Auto Auto Auto Auto">
+                <TextBox Classes="CommandBarElement" Grid.Row="0">
+                    /home/exo
+                </TextBox>
+                <fa:CommandBar Grid.Row="1" DefaultLabelPosition="Right">
+                    <fa:CommandBar.PrimaryCommands>
+                        <fa:CommandBarElementContainer>
+                            <DropDownButton Classes="CommandBarElement">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:SymbolIcon Symbol="Add" />
+                                    <Label Content="Создать" />
+                                </StackPanel>
+                            </DropDownButton>
+                        </fa:CommandBarElementContainer>
+                        <fa:CommandBarSeparator />
+                        <fa:CommandBarButton IconSource="Add" Label="Создать" />
+                    </fa:CommandBar.PrimaryCommands>
+                </fa:CommandBar>
+
+                <DataGrid Grid.Row="2"
+                          Classes="FilesPresenter">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Имя" />
+                        <DataGridTextColumn Header="Дата изменения" />
+                        <DataGridTextColumn Header="Тип" />
+                        <DataGridTextColumn Header="Размер" />
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <StackPanel Grid.Row="3" Spacing="5">
+                    <RadioButton Classes="Bookmarks" GroupName="Bookmarks" IsChecked="True" Content="РадиоТест1" />
+                    <RadioButton Classes="Bookmarks" GroupName="Bookmarks" IsChecked="False" Content="РадиоТест2" />
+                    <ListBoxItem Content="Test" IsSelected="True" />
+                    <ListBoxItem Content="Test2" IsSelected="False" />
+                </StackPanel>
+            </Grid>
+
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+
+    <Style Selector="fa|CommandBarButton">
+        <Setter Property="ToolTip.Placement" Value="Top" />
+        <Setter Property="ToolTip.VerticalOffset" Value="5" />
+        <Style Selector="^[IsCompact=True] /template/ TextBlock#TextLabel">
+            <Setter Property="Margin" Value="10 0 0 0" />
+        </Style>
+    </Style>
+
+    <Style Selector="DropDownButton.CommandBarElement">
+        <Setter Property="Height" Value="35" />
+        <Setter Property="Padding" Value="10 0" />
+        <Setter Property="Margin" Value="2 0" />
+        <Setter Property="Background" Value="{DynamicResource AppBarButtonBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppBarButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppBarButtonBorderBrush}" />
+        <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+
+        <Style Selector="^ /template/ Border#RootBorder">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Duration="00:00:00.083" Property="Background" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#RootBorder">
+            <Setter Property="Background" Value="{DynamicResource AppBarButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBarButtonBorderBrushPointerOver}" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Duration="00:00:00.083" Property="Background" />
+                </Transitions>
+            </Setter>
+        </Style>
+    </Style>
+
+    <Style Selector="TextBox.CommandBarElement">
+        <Setter Property="Height" Value="35" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource AppBarButtonBackgroundPointerOver}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppBarButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppBarButtonBorderBrush}" />
+        <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+
+        <Style Selector="^:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AppBarButtonBackgroundPointerOver}" />
+        </Style>
+
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Duration="00:00:00.083" Property="Background" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="DataGrid.FilesPresenter">
+        <Style Selector="^ DataGridCell:current">
+            <Setter Property="IsVisible" Value="false" />
+        </Style>
+    </Style>
+
+    <Style Selector="fa|TabView.TabsPresenter fa|TabViewItem > Border#LayoutRootBorder">
+        <Style.Animations>
+            <Animation Duration="0:0:0.1"
+                       Easing="QuadraticEaseIn">
+                <KeyFrame Cue="0%">
+                    <Setter Property="TranslateTransform.Y" Value="50" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="TranslateTransform.Y" Value="1" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
+    <Style Selector="Button.AccentButton">
+        <Setter Property="Background" Value="{DynamicResource SystemAccentColor}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Content" Value="Подключиться" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SystemAccentColorDark1}" />
+        </Style>
+    </Style>
+
+    <Style Selector="RadioButton.Bookmarks">
+        <Setter Property="ToolTip.Placement" Value="Top" />
+        <Setter Property="ToolTip.VerticalOffset" Value="5" />
+        <Setter Property="ToolTip.ShowDelay" Value="700" />
+        <Setter Property="ToolTip.BetweenShowDelay" Value="-1" />
+
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="10 0" />
+        <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
+        <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
+        <Setter Property="Background" Value="{DynamicResource ListViewItemBackground}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Foreground" Value="{DynamicResource ListViewItemForeground}" />
+        <Setter Property="Padding" Value="16,0,12,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinWidth" Value="{DynamicResource ListViewItemMinWidth}" />
+        <Setter Property="MinHeight" Value="{DynamicResource ListViewItemMinHeight}" />
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Content="{TemplateBinding Content}"
+                                      Padding="{TemplateBinding Padding}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      Margin="2" />
+
+                    <!-- added 1px left margin, otherwise we can get strange artifacts while
+                         animating, I'm guessing from bad invalidation rects? -->
+                    <Rectangle Name="SelectionIndicator"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Width="3" Height="16"
+                               Margin="2 0 0 0"
+                               UseLayoutRounding="False"
+                               RadiusX="2" RadiusY="2"
+                               IsVisible="False"
+                               RenderTransform="scaleY(0)"
+                               Fill="{DynamicResource AccentFillColorDefaultBrush}">
+                        <Rectangle.Transitions>
+                            <Transitions>
+                                <TransformOperationsTransition Duration="00:00:00.167"
+                                                               Property="RenderTransform"
+                                                               Easing="0,0 0,1" />
+                            </Transitions>
+                        </Rectangle.Transitions>
+                    </Rectangle>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:disabled">
+            <!-- There's no Disabled brush for LVI, so just dim opacity -->
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundPointerOver}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundPointerOver}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundPressed}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundPressed}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:checked">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelected}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelected}" />
+            </Style>
+            <Style Selector="^ /template/ Rectangle#SelectionIndicator">
+                <Setter Property="IsVisible" Value="True" />
+                <Setter Property="RenderTransform" Value="scaleY(1)" />
+            </Style>
+            <Style Selector="^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelected}" />
+            </Style>
+            <Style Selector="^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelected}" />
+            </Style>
+
+
+            <Style Selector="^:pointerover">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelectedPointerOver}" />
+                </Style>
+                <Style Selector="^ /template/ ContentPresenter">
+                    <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelectedPointerOver}" />
+                </Style>
+                <Style Selector="^ /template/ Rectangle#SelectionIndicator">
+                    <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPointerOverBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^:pressed">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelectedPressed}" />
+                </Style>
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelectedPressed}" />
+                </Style>
+                <Style Selector="^ /template/ Rectangle#SelectionIndicator">
+                    <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPressedBrush}" />
+                    <!-- TODO: Uncomment when Avalonia fixes selection to work on pointer up -->
+                    <!--<Setter Property="RenderTransform" Value="scaleY(0.5)" />-->
+                </Style>
+            </Style>
+
+            <Style Selector="^:disabled /template/ Rectangle#SelectionIndicator">
+                <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorDisabledBrush}" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>
