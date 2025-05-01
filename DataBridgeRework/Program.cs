@@ -20,6 +20,14 @@ internal abstract class Program
     {
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(new X11PlatformOptions
+            {
+                RenderingMode =
+                [
+                    X11RenderingMode.Software,
+                    X11RenderingMode.Egl
+                ]
+            })
             .With(new Win32PlatformOptions
             {
                 RenderingMode =

@@ -143,7 +143,6 @@
         <Setter Property="ToolTip.BetweenShowDelay" Value="-1" />
 
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Margin" Value="10 0" />
         <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
         <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
         <Setter Property="Background" Value="{DynamicResource ListViewItemBackground}" />
@@ -258,7 +257,7 @@
                 <Style Selector="^ /template/ Rectangle#SelectionIndicator">
                     <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPressedBrush}" />
                     <!-- TODO: Uncomment when Avalonia fixes selection to work on pointer up -->
-                    <!--<Setter Property="RenderTransform" Value="scaleY(0.5)" />-->
+                    <Setter Property="RenderTransform" Value="scaleY(0.5)" />
                 </Style>
             </Style>
 

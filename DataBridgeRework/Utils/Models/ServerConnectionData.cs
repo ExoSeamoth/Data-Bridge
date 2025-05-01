@@ -1,28 +1,61 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using DataBridgeRework.Utils.Converters;
 
 namespace DataBridgeRework.Utils.Models;
 
-public sealed class ServerConnectionData
+[JsonConverter(typeof(ServerConnectionDataJsonConverter))]
+public partial class ServerConnectionData : ObservableValidator
 {
-    [JsonPropertyName("id")] public Guid Id { get; init; } = Guid.NewGuid();
+    [JsonPropertyName("id")] 
+    public Guid Id { get; private init; } = Guid.NewGuid();
+    
+    [ObservableProperty] [Required(ErrorMessage = "Введите имя пользователя.")]
+    [JsonPropertyName("userName")]
+    private string _userName = string.Empty;
 
-    [JsonPropertyName("serverName")] public string ServerName { get; set; } = "Новый сервер";
+    [ObservableProperty] [Required(ErrorMessage = "Введите адрес сервера.")]
+    [JsonPropertyName("hostName")]
+    private string _hostName = string.Empty;
 
-    [JsonPropertyName("userName")] public string UserName { get; set; } = string.Empty;
+    [ObservableProperty]
+    [JsonPropertyName("port")]
+    private ushort _port = 22;
 
-    [JsonPropertyName("hostName")] public string HostName { get; set; } = string.Empty;
+    [ObservableProperty]
+    [JsonPropertyName("type")] 
+    private SecurityType _securityType = SecurityType.Password;
 
-    [JsonPropertyName("port")] public ushort Port { get; set; } = 22;
+    [ObservableProperty]
+    [JsonIgnore] 
+    private string _password = string.Empty;
 
-    [JsonPropertyName("type")] public SecurityType Type { get; set; } = SecurityType.Password;
+    [ObservableProperty] [Required(ErrorMessage = "Укажите путь до ключа.")]
+    [JsonPropertyName("sshKeyPath")]
+    private string _sshKeyPath = string.Empty;
 
-    [JsonIgnore] public string Password { get; set; } = string.Empty;
+    [ObservableProperty] 
+    [JsonIgnore]
+    private string _sshKeyPhrase = string.Empty;
 
-    [JsonPropertyName("sshKeyPath")] public string SshKeyPath { get; set; } = string.Empty;
-
-    [JsonIgnore] public string SshKeyPhrase { get; set; } = string.Empty;
-
-    [JsonPropertyName("bookmarks")] public ObservableCollection<string> Bookmarks { get; init; } = [];
+    [JsonPropertyName("bookmarks")] 
+    public ObservableCollection<string> Bookmarks { get; init; } = [];
+    
+    public void ValidateFields()
+    {
+        ValidateProperty(Port, nameof(Port));
+        ValidateProperty(UserName, nameof(UserName));
+        ValidateProperty(HostName, nameof(HostName));
+        switch (SecurityType)
+        {
+            case SecurityType.Password:
+                break;
+            case SecurityType.SshKey:
+                ValidateProperty(SshKeyPath, nameof(SshKeyPath));
+                break;
+        }
+    }
 }
