@@ -1,45 +1,96 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DataBridgeRework.Utils.Converters;
 using DataBridgeRework.Utils.Models;
 
 namespace DataBridgeRework.ViewModels;
 
-public partial class ConnectionWindowViewModel : ObservableValidator
+public partial class ConnectionWindowViewModel : ObservableObject
 {
-    [ObservableProperty] [Required(ErrorMessage = "Введите адрес сервера.")]
-    private string _hostName = string.Empty;
+    private const string SAVE_CONNECTIONS_PATH = "connections.json";
+    private readonly JsonSerializerOptions jsonOptions = new()
+    {
+        WriteIndented = true,
+        Converters = { new ServerConnectionDataJsonConverter() }
+    };
+    public ObservableCollection<ServerConnectionData> SavedConnections { get; init; }
 
-    [ObservableProperty] private string _password = string.Empty;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SaveButtonText))]
+    [NotifyPropertyChangedFor(nameof(IsNewConnection))]
+    private ServerConnectionData _selectedServerConnection = new();
 
-    [ObservableProperty] [Range(1, 65535)] [Required(ErrorMessage = "Введите порт.")]
-    private ushort _port = 22;
+    [ObservableProperty] private int _selectedConnectionIndex = -1;
 
-    private ObservableCollection<ServerConnectionData> _savedConnections = [];
+    public ConnectionWindowViewModel()
+    {
+        SavedConnections = new ObservableCollection<ServerConnectionData>(GetConnectionsFromJson());
+    }
+    
+    partial void OnSelectedConnectionIndexChanged(int value)
+    {
+        if (value >= 0 && value < SavedConnections.Count)
+            SelectedServerConnection = SavedConnections[value];
+    }
 
-    [ObservableProperty] private SecurityType _securityType = SecurityType.Password;
-
-    [ObservableProperty] [Required(ErrorMessage = "Укажите путь до ключа.")]
-    private string _sshKeyPath = string.Empty;
-
-    [ObservableProperty] private string _sshKeyPhrase = string.Empty;
-
-    [ObservableProperty] [Required(ErrorMessage = "Введите имя пользователя.")]
-    private string _userName = string.Empty;
+    public bool IsNewConnection => SelectedConnectionIndex == -1;
+    public string SaveButtonText => IsNewConnection ? "Сохранить" : "Копировать";
 
     [RelayCommand]
     private void ConnectToServer(Window window)
     {
-        ValidateFields();
-        if (HasErrors) return;
-        Console.WriteLine("Trying to connect");
+        SelectedServerConnection.ValidateFields();
+        if (SelectedServerConnection.HasErrors) return;
+
+        window.Close(SelectedServerConnection);
     }
 
+    [RelayCommand]
+    private void CreateNewConnection()
+    {
+        SelectedConnectionIndex = -1;
+        SelectedServerConnection = new ServerConnectionData();
+    }
+
+    [RelayCommand]
+    private void DeleteConnection(ServerConnectionData connection)
+    {
+        SavedConnections.Remove(connection);
+        CreateNewConnectionCommand.Execute(null);
+    }
+
+    [RelayCommand]
+    private void AddConnection()
+    {
+        SelectedServerConnection.ValidateFields();
+        if (SelectedServerConnection.HasErrors) return;
+
+        ServerConnectionData connection = new()
+        {
+            HostName = SelectedServerConnection.HostName,
+            Port = SelectedServerConnection.Port,
+            UserName = SelectedServerConnection.UserName,
+            Password = SelectedServerConnection.Password,
+            SshKeyPath = SelectedServerConnection.SshKeyPath,
+            SshKeyPhrase = SelectedServerConnection.SshKeyPhrase,
+            SecurityType = SelectedServerConnection.SecurityType
+        };
+
+        SavedConnections.Add(connection);
+
+        SelectedConnectionIndex = SavedConnections.Count - 1;
+    }
+    
     [RelayCommand]
     private async Task OpenFileDialog(Window window)
     {
@@ -63,30 +114,26 @@ public partial class ConnectionWindowViewModel : ObservableValidator
         if (result.Count > 0)
         {
             var selectedFile = result[0];
-            SshKeyPath = selectedFile.Path.AbsolutePath;
+            SelectedServerConnection.SshKeyPath = selectedFile.Path.AbsolutePath;
         }
     }
 
-    [RelayCommand]
-    private void SaveConnection()
+    public IEnumerable<ServerConnectionData> GetConnectionsFromJson()
     {
-        ValidateFields();
-        if (HasErrors) return;
-        Console.WriteLine("Trying to save the connection");
-    }
-
-    private void ValidateFields()
-    {
-        ValidateProperty(Port, nameof(Port));
-        ValidateProperty(UserName, nameof(UserName));
-        ValidateProperty(HostName, nameof(HostName));
-        switch (SecurityType)
+        if (File.Exists(SAVE_CONNECTIONS_PATH))
         {
-            case SecurityType.Password:
-                break;
-            case SecurityType.SshKey:
-                ValidateProperty(SshKeyPath, nameof(SshKeyPath));
-                break;
+            string jsonData = File.ReadAllText(SAVE_CONNECTIONS_PATH);
+            return JsonSerializer.Deserialize<List<ServerConnectionData>>(jsonData);
         }
+        
+        File.WriteAllText(SAVE_CONNECTIONS_PATH, "[\n]");
+        
+        return new List<ServerConnectionData>();
+    }
+    
+    public void SaveConnectionsToJson()
+    {
+        var jsonData = JsonSerializer.Serialize(SavedConnections, jsonOptions);
+        File.WriteAllText(SAVE_CONNECTIONS_PATH, jsonData);
     }
 }

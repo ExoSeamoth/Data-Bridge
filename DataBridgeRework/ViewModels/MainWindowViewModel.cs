@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataBridgeRework.Utils.Factories;
 using DataBridgeRework.Utils.Messages;
+using DataBridgeRework.Utils.Models;
 using DataBridgeRework.Views;
 using FluentAvalonia.UI.Controls;
 using Renci.SshNet;
@@ -16,20 +17,18 @@ namespace DataBridgeRework.ViewModels;
 
 public sealed partial class MainWindowViewModel : ObservableRecipient
 {
-    private readonly ConnectionWindowViewModel _connectionWindowViewModel;
-    private readonly IExplorerViewModelFactory _tabsFactory;
-    [ObservableProperty] private ExplorerViewModel _selectedTab = null!;
     private SftpClient _sftpClient;
 
-    public MainWindowViewModel(IExplorerViewModelFactory tabsFactory,
-        ConnectionWindowViewModel connectionWindowViewModel)
+    private readonly IExplorerViewModelFactory _tabsFactory;
+    [ObservableProperty] private ExplorerViewModel _selectedTab = null!;
+    public ObservableCollection<ExplorerViewModel> Tabs { get; init; } = new();
+
+    public MainWindowViewModel(IExplorerViewModelFactory tabsFactory)
     {
         _tabsFactory = tabsFactory;
-        _connectionWindowViewModel = connectionWindowViewModel;
         AddTabCommand.Execute(null);
     }
 
-    public ObservableCollection<ExplorerViewModel> Tabs { get; } = new();
 
     protected override void OnActivated()
     {
@@ -45,18 +44,18 @@ public sealed partial class MainWindowViewModel : ObservableRecipient
     {
         ConnectionWindow connectionWindow = new()
         {
-            DataContext = _connectionWindowViewModel
+            DataContext = new ConnectionWindowViewModel()
         };
 
-        var client = await connectionWindow.ShowDialog<SftpClient?>(window);
+        var client = await connectionWindow.ShowDialog<ServerConnectionData?>(window);
 
         if (client == null)
             return false;
-
-        if (!await TryConnectClientAsync(client, window))
-            return false;
-
-        _sftpClient = client;
+        //
+        // if (!await TryConnectClientAsync(client, window))
+        //     return false;
+        //
+        // _sftpClient = client;
         return true;
     }
 

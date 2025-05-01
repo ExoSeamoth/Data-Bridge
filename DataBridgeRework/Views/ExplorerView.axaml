@@ -67,16 +67,14 @@
             </fa:CommandBar.PrimaryCommands>
         </fa:CommandBar>
 
-        <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="Auto *"
+        <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="Auto *" Margin="5 0"
               Width="180"
               Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
-            <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="5" VerticalAlignment="Stretch">
+            <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="2.5" VerticalAlignment="Stretch">
+                
+                <!-- Home directory bookmark -->
                 <!-- TODO: Разобраться с ебучим преобразованием поля IsChecked -->
                 <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
-                             Tag="{Binding  UserHomeDirectory}"
-                             IsChecked="{Binding CurrentFullPath, 
-                                         Converter={StaticResource StringsCompareConverter}, 
-                                         ConverterParameter='пидарасы ёбаные блять' }"
                              ToolTip.Tip="{Binding UserHomeDirectory}">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <fa:IconSourceElement Height="16" Width="16"
@@ -89,6 +87,7 @@
                     </StackPanel>
                 </RadioButton>
 
+                <!-- Root directory bookmark -->
                 <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
                              IsChecked="{Binding CurrentFullPath,
                                          Converter={StaticResource StringsCompareConverter},
@@ -107,11 +106,11 @@
 
                 <Separator Margin="15 5" />
             </StackPanel>
-
+            
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
                 <fa:ItemsRepeater ItemsSource="{Binding Bookmarks}">
                     <fa:ItemsRepeater.Layout>
-                        <fa:StackLayout Orientation="Vertical" Spacing="5" />
+                        <fa:StackLayout Orientation="Vertical" Spacing="2.5" />
                     </fa:ItemsRepeater.Layout>
                     <fa:ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="system:String">

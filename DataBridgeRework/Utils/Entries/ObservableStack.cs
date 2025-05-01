@@ -13,11 +13,9 @@ public class ObservableStack<T> : Stack<T>, INotifyPropertyChanged, INotifyColle
         get => _currentItem;
         private set
         {
-            if (!EqualityComparer<T>.Default.Equals(_currentItem, value))
-            {
-                _currentItem = value;
-                OnPropertyChanged(EventArgsCache.CurrentPropertyChanged);
-            }
+            if (EqualityComparer<T>.Default.Equals(_currentItem, value)) return;
+            _currentItem = value;
+            OnPropertyChanged(EventArgsCache.CurrentPropertyChanged);
         }
     }
 
