@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using DataBridgeRework.ViewModels;
@@ -28,9 +29,15 @@ public partial class MainWindow : AppWindow
         var vm = DataContext as MainWindowViewModel;
 
         if (!await vm.OpenConnectionDialogAsync(this))
-            Console.WriteLine("Failed to open connection dialog");
+        {
+            Debug.WriteLine("Failed to open connection dialog from start");
+            Close();
+        }
         else
-            Console.WriteLine("Successfully open connection dialog");
+        {
+            Debug.WriteLine("Successfully open connection dialog from start");
+            vm.AddTabCommand.Execute(null);
+        }
     }
 
     private async void OpenConnectionDialogRequest(object sender, RoutedEventArgs e)
@@ -38,8 +45,8 @@ public partial class MainWindow : AppWindow
         var vm = DataContext as MainWindowViewModel;
 
         if (!await vm.OpenConnectionDialogAsync(this))
-            Console.WriteLine("Failed to open connection dialog");
+            Debug.WriteLine("Failed to open connection dialog");
         else
-            Console.WriteLine("Successfully open connection dialog");
+            Debug.WriteLine("Successfully open connection dialog");
     }
 }

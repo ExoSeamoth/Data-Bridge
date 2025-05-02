@@ -66,18 +66,20 @@
         <StackPanel Grid.Row="1" Grid.Column="1"
                     Spacing="5"
                     Margin="0 5 5 5">
-            
-            
+
+
             <StackPanel>
                 <Label Content="Адрес сервера:" Target="HostInput" />
-                <TextBox x:Name="HostInput" Text="{Binding SelectedServerConnection.HostName, UpdateSourceTrigger=LostFocus}"
+                <TextBox x:Name="HostInput"
+                         Text="{Binding SelectedServerConnection.HostName, UpdateSourceTrigger=LostFocus}"
                          ToolTip.Tip="{Binding $self.Text}" />
             </StackPanel>
 
             <Grid ColumnDefinitions="* Auto">
                 <StackPanel Grid.Column="0">
                     <Label Content="Пользователь:" Target="UserInput" />
-                    <TextBox x:Name="UserInput" Text="{Binding SelectedServerConnection.UserName, UpdateSourceTrigger=LostFocus}"
+                    <TextBox x:Name="UserInput"
+                             Text="{Binding SelectedServerConnection.UserName, UpdateSourceTrigger=LostFocus}"
                              Margin="0 0 5 0"
                              ToolTip.Tip="{Binding $self.Text}" />
                 </StackPanel>

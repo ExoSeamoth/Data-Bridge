@@ -27,6 +27,11 @@ public sealed class FakeSftpClientService : ISftpClientService
         return Task.CompletedTask;
     }
 
+    public string GetWorkingDirectory()
+    {
+        throw new NotImplementedException();
+    }
+
     public async IAsyncEnumerable<RemoteFileModel> ListDirectoryAsync(string path,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -123,6 +128,11 @@ public sealed class FakeSftpClientService : ISftpClientService
         }
 
         await Task.CompletedTask;
+    }
+
+    public bool Exists(string remotePath)
+    {
+        throw new NotImplementedException();
     }
 
     public Task<bool> ExistsAsync(string remotePath, CancellationToken cancellationToken = default)

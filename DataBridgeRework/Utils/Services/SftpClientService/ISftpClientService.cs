@@ -16,7 +16,8 @@ public interface ISftpClientService : IAsyncDisposable
     /// </summary>
     /// <param name="connectionData">Данные подключения</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <exception cref="SftpConnectionException">Ошибка подключения</exception>
+    /// <exception cref="SshAuthenticationException">Аунтификация по SSH провалилась.</exception>
+    /// <exception cref="Exception">Неизвестная ошибка подключения</exception>
     Task ConnectAsync(ConnectionInfo connectionData, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -25,6 +26,8 @@ public interface ISftpClientService : IAsyncDisposable
     /// <param name="cancellationToken">Токен отмены</param>
     Task DisconnectAsync(CancellationToken cancellationToken = default);
 
+    string GetWorkingDirectory();
+        
     /// <summary>
     ///     Получает список файлов и каталогов по указанному пути с возможностью отмены
     /// </summary>
@@ -87,8 +90,7 @@ public interface ISftpClientService : IAsyncDisposable
     ///     Проверяет существование пути на SFTP сервере
     /// </summary>
     /// <param name="remotePath">Удалённый путь</param>
-    /// <param name="cancellationToken">Токен отмены</param>
-    Task<bool> ExistsAsync(string remotePath, CancellationToken cancellationToken = default);
+    bool Exists(string remotePath);
 
     /// <summary>
     ///     Создаёт директорию по указанному пути

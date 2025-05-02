@@ -7,11 +7,12 @@ namespace DataBridgeRework.Utils.Converters;
 
 public sealed class ServerConnectionDataJsonConverter : JsonConverter<ServerConnectionData>
 {
-    public override ServerConnectionData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override ServerConnectionData Read(ref Utf8JsonReader reader, Type typeToConvert,
+        JsonSerializerOptions options)
     {
         using var jsonDoc = JsonDocument.ParseValue(ref reader);
         var root = jsonDoc.RootElement;
-        
+
         var instance = new ServerConnectionData();
 
         if (root.TryGetProperty("id", out var idProp) && idProp.TryGetGuid(out var guid))
@@ -35,13 +36,9 @@ public sealed class ServerConnectionDataJsonConverter : JsonConverter<ServerConn
             instance.SshKeyPath = keyPath.GetString() ?? "";
 
         if (root.TryGetProperty("bookmarks", out var bookmarksElem) && bookmarksElem.ValueKind == JsonValueKind.Array)
-        {
             foreach (var item in bookmarksElem.EnumerateArray())
-            {
                 if (item.ValueKind == JsonValueKind.String)
                     instance.Bookmarks.Add(item.GetString()!);
-            }
-        }
 
         return instance;
     }

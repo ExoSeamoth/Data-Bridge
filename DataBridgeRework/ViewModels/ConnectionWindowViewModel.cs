@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -18,33 +15,35 @@ namespace DataBridgeRework.ViewModels;
 public partial class ConnectionWindowViewModel : ObservableObject
 {
     private const string SAVE_CONNECTIONS_PATH = "connections.json";
+
     private readonly JsonSerializerOptions jsonOptions = new()
     {
         WriteIndented = true,
-        Converters = { new ServerConnectionDataJsonConverter() }
+        // Converters = { new ServerConnectionDataJsonConverter() }
     };
-    public ObservableCollection<ServerConnectionData> SavedConnections { get; init; }
+
+    [ObservableProperty] private int _selectedConnectionIndex = -1;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SaveButtonText))]
     [NotifyPropertyChangedFor(nameof(IsNewConnection))]
     private ServerConnectionData _selectedServerConnection = new();
 
-    [ObservableProperty] private int _selectedConnectionIndex = -1;
-
     public ConnectionWindowViewModel()
     {
         SavedConnections = new ObservableCollection<ServerConnectionData>(GetConnectionsFromJson());
     }
-    
+
+    public ObservableCollection<ServerConnectionData> SavedConnections { get; init; }
+
+    public bool IsNewConnection => SelectedConnectionIndex == -1;
+    public string SaveButtonText => IsNewConnection ? "Сохранить" : "Копировать";
+
     partial void OnSelectedConnectionIndexChanged(int value)
     {
         if (value >= 0 && value < SavedConnections.Count)
             SelectedServerConnection = SavedConnections[value];
     }
-
-    public bool IsNewConnection => SelectedConnectionIndex == -1;
-    public string SaveButtonText => IsNewConnection ? "Сохранить" : "Копировать";
 
     [RelayCommand]
     private void ConnectToServer(Window window)
@@ -90,7 +89,7 @@ public partial class ConnectionWindowViewModel : ObservableObject
 
         SelectedConnectionIndex = SavedConnections.Count - 1;
     }
-    
+
     [RelayCommand]
     private async Task OpenFileDialog(Window window)
     {
@@ -122,15 +121,15 @@ public partial class ConnectionWindowViewModel : ObservableObject
     {
         if (File.Exists(SAVE_CONNECTIONS_PATH))
         {
-            string jsonData = File.ReadAllText(SAVE_CONNECTIONS_PATH);
+            var jsonData = File.ReadAllText(SAVE_CONNECTIONS_PATH);
             return JsonSerializer.Deserialize<List<ServerConnectionData>>(jsonData);
         }
-        
+
         File.WriteAllText(SAVE_CONNECTIONS_PATH, "[\n]");
-        
+
         return new List<ServerConnectionData>();
     }
-    
+
     public void SaveConnectionsToJson()
     {
         var jsonData = JsonSerializer.Serialize(SavedConnections, jsonOptions);

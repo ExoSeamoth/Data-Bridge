@@ -10,40 +10,30 @@ namespace DataBridgeRework.Utils.Models;
 [JsonConverter(typeof(ServerConnectionDataJsonConverter))]
 public partial class ServerConnectionData : ObservableValidator
 {
-    [JsonPropertyName("id")] 
     public Guid Id { get; private init; } = Guid.NewGuid();
-    
-    [ObservableProperty] [Required(ErrorMessage = "Введите имя пользователя.")]
-    [JsonPropertyName("userName")]
+
+    [ObservableProperty] [Required(ErrorMessage = "Введите имя пользователя.")] 
     private string _userName = string.Empty;
 
     [ObservableProperty] [Required(ErrorMessage = "Введите адрес сервера.")]
-    [JsonPropertyName("hostName")]
     private string _hostName = string.Empty;
 
     [ObservableProperty]
-    [JsonPropertyName("port")]
     private ushort _port = 22;
 
     [ObservableProperty]
-    [JsonPropertyName("type")] 
     private SecurityType _securityType = SecurityType.Password;
 
-    [ObservableProperty]
-    [JsonIgnore] 
+    [ObservableProperty] 
     private string _password = string.Empty;
 
     [ObservableProperty] [Required(ErrorMessage = "Укажите путь до ключа.")]
-    [JsonPropertyName("sshKeyPath")]
     private string _sshKeyPath = string.Empty;
 
-    [ObservableProperty] 
-    [JsonIgnore]
-    private string _sshKeyPhrase = string.Empty;
+    [ObservableProperty] private string _sshKeyPhrase = string.Empty;
 
-    [JsonPropertyName("bookmarks")] 
-    public ObservableCollection<string> Bookmarks { get; init; } = [];
-    
+    public ObservableCollection<string> Bookmarks { get; private set; } = [];
+
     public void ValidateFields()
     {
         ValidateProperty(Port, nameof(Port));

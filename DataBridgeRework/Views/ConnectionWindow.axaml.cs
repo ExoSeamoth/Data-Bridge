@@ -17,7 +17,7 @@ public partial class ConnectionWindow : AppWindow
     private void SaveConnectionsEvent(object sender, WindowClosingEventArgs e)
     {
         var vm = DataContext as ConnectionWindowViewModel;
-        
+
         vm.SaveConnectionsToJson();
     }
 }

@@ -107,7 +107,7 @@
     </Style>
 
     <Style Selector="DataGrid.FilesPresenter">
-        <Style Selector="^ DataGridCell:current">
+        <Style Selector="^ DataGridCell:current /template/ Grid#FocusVisual">
             <Setter Property="IsVisible" Value="false" />
         </Style>
     </Style>

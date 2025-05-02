@@ -15,6 +15,9 @@ public sealed class ExplorerViewModelFactory(ISftpClientService sftpClientServic
     {
         return new ExplorerViewModel(sftpClientService);
     }
+    // {
+    //     CurrentFullPath = $"/root/folder/dir{Random.Shared.Next(0, 100)}"
+    // };
 
     public ExplorerViewModel Create(string path)
     {

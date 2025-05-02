@@ -9,7 +9,7 @@ using DataBridgeRework.Views;
 
 namespace DataBridgeRework;
 
-public class ViewLocator : IDataTemplate
+public sealed class ViewLocator : IDataTemplate
 {
     private readonly Dictionary<Type, Func<Control?>> _locator = new();
 

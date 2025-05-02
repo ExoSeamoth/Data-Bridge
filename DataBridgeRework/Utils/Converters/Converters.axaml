@@ -4,4 +4,5 @@
     <converters:FullPathToFolderNameConverter x:Key="FullPathToFolderNameConverter" />
     <converters:SecurityTypeToBoolConverter x:Key="SecurityTypeToBoolConverter" />
     <converters:StringsCompareConverter x:Key="StringsCompareConverter" />
+    <converters:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
 </ResourceDictionary>

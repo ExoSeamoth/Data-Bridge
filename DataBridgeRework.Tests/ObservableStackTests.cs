@@ -23,7 +23,7 @@ public sealed class ObservableStackTests
         stack.Push("Second");
 
         stack.CurrentItem.Should().Be("Second");
-        
+
         stack.Pop();
 
         stack.CurrentItem.Should().Be("First");

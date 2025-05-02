@@ -29,12 +29,12 @@
                                          ToolTip.Tip="Обновить" />
                 </fa:CommandBar.PrimaryCommands>
             </fa:CommandBar>
-
+            
             <TextBox Classes="CommandBarElement" Grid.Column="1"
                      Height="10" Margin="0 0 5 0"
                      AcceptsReturn="False"
                      AcceptsTab="False"
-                     Text="{Binding CurrentFullPath, UpdateSourceTrigger=LostFocus, Mode=TwoWay}" />
+                     Text="{Binding CurrentFullPath, UpdateSourceTrigger=LostFocus, Mode=Default}" />
         </Grid>
 
         <fa:CommandBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
@@ -63,6 +63,7 @@
                 <fa:CommandBarButton IconSource="Rename" IsCompact="True" />
                 <fa:CommandBarButton IconSource="Delete" IsCompact="True" />
                 <fa:CommandBarButton IconSource="Download" IsCompact="True" />
+                <!-- TODO: Не забыть удалить -->
                 <fa:CommandBarButton IconSource="Add" IsCompact="True" Command="{Binding CreateNewTabCommand}" />
             </fa:CommandBar.PrimaryCommands>
         </fa:CommandBar>
@@ -71,9 +72,9 @@
               Width="180"
               Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
             <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="2.5" VerticalAlignment="Stretch">
-                
+
                 <!-- Home directory bookmark -->
-                <!-- TODO: Разобраться с ебучим преобразованием поля IsChecked -->
+                <!-- TODO: Разобраться с преобразованием поля IsChecked -->
                 <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
                              ToolTip.Tip="{Binding UserHomeDirectory}">
                     <StackPanel Orientation="Horizontal" Spacing="5">
@@ -106,7 +107,7 @@
 
                 <Separator Margin="15 5" />
             </StackPanel>
-            
+
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
                 <fa:ItemsRepeater ItemsSource="{Binding Bookmarks}">
                     <fa:ItemsRepeater.Layout>
@@ -139,13 +140,34 @@
             <Border CornerRadius="5 5 0 0"
                     ClipToBounds="True">
                 <DataGrid Classes="FilesPresenter"
-                          ItemsSource="{Binding Files}">
+                          ItemsSource="{Binding Files}"
+                          IsReadOnly="True"
+                          CanUserResizeColumns="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Имя" Binding="{Binding Name}" />
+                        <DataGridTemplateColumn Header="Имя" MaxWidth="270" Width="*" 
+                                                SortMemberPath="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="5" Margin="5 0">
+                                        <fa:IconSourceElement
+                                            Height="16" Width="16"
+                                            VerticalAlignment="Center"
+                                            RenderOptions.BitmapBlendingMode="Unspecified"
+                                            IconSource="{Binding Type, Converter={StaticResource FileTypeToIconConverter}}" />
+                                        <TextBlock Text="{Binding Name}"
+                                                   BaselineOffset="0"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Дата изменения" Binding="{Binding LastWriteTime}" />
-                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" />
+                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" 
+                                            MinWidth="100"
+                                            Width="Auto"/>
                         <DataGridTextColumn Header="Размер" Binding="{Binding Size}" />
-                        <DataGridTextColumn Header="Права доступа" Binding="{Binding Permissions}" />
+                        <DataGridTextColumn Header="Права доступа" Binding="{Binding Permissions}" 
+                                            Width="Auto"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Border>

@@ -26,12 +26,23 @@
                     IconSource="{StaticResource FolderIcon}"
                     ToolTip.Tip="{Binding CurrentFullPath}"
                     Content="{Binding .}">
-                    <!-- <fa:TabViewItem.Content> -->
-                    <!--     <views:ExplorerView DataContext="{Binding $parent[fa:TabViewItem].DataContext}" /> -->
-                    <!-- </fa:TabViewItem.Content> -->
+                    <fa:TabViewItem.ContextFlyout>
+                        <fa:FAMenuFlyout Placement="Top">
+                            <fa:MenuFlyoutItem IconSource="Cancel" Text="Закрыть вкладку"
+                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveTabCommand}"
+                                               CommandParameter="{Binding .}" />
+                            <fa:MenuFlyoutItem Text="Закрыть остальные вкладки"
+                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ClearTabsExceptCommand}"
+                                               CommandParameter="{Binding .}" />
+                            <fa:MenuFlyoutItem IconSource="ClearSelection" Text="Дублировать вкладку"
+                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).AddTabCommand}"
+                                               CommandParameter="{Binding .}" />
+                        </fa:FAMenuFlyout>
+                    </fa:TabViewItem.ContextFlyout>
                 </fa:TabViewItem>
             </DataTemplate>
         </fa:TabView.TabItemTemplate>
+
 
         <fa:TabView.TabStripHeader>
             <Button VerticalAlignment="Bottom"
