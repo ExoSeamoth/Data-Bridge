@@ -2,12 +2,10 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using CommunityToolkit.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DataBridgeRework.Utils.Factories;
-using DataBridgeRework.Utils.Services.FileSyncService;
-using DataBridgeRework.Utils.Services.SftpClientService;
+using DataBridgeRework.Utils.Services.SftpSyncManager;
 using DataBridgeRework.ViewModels;
 using DataBridgeRework.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,12 +41,11 @@ public sealed partial class App : Application
 
             desktop.MainWindow = view;
         }
-
+        
         base.OnFrameworkInitializationCompleted();
     }
-
-    [Singleton(typeof(SftpClientService), typeof(ISftpClientService))]
-    [Singleton(typeof(FileSyncService))]
+    
+    [Singleton(typeof(SftpSyncManager), typeof(ISftpSyncManager))]
     private static partial void ConfigureServices(IServiceCollection services);
 
     [Singleton(typeof(MainWindowViewModel))]

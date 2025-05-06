@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -32,13 +33,13 @@ public partial class ExplorerView : UserControl
                 break;
             case FileType.File:
                 await vm.OpenRemoteFile(remoteFile.FullPath);
-                Console.WriteLine("DoubleClick on file");
+                Debug.WriteLine("DoubleClick on file");
                 break;
             case FileType.SymbolicLink:
-                Console.WriteLine("DoubleClick on symbolic link");
+                Debug.WriteLine("DoubleClick on symbolic link");
                 break;
             case FileType.Socket:
-                Console.WriteLine("DoubleClick on socket");
+                Debug.WriteLine("DoubleClick on socket");
                 break;
             default: return;
         }

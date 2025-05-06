@@ -4,16 +4,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataBridgeRework.Utils.Factories;
 using DataBridgeRework.Utils.Messages;
 using DataBridgeRework.Utils.Models;
-using DataBridgeRework.Utils.Services.FileSyncService;
-using DataBridgeRework.Utils.Services.SftpClientService;
+using DataBridgeRework.Utils.Services.SftpSyncManager;
 using DataBridgeRework.Views;
 using FluentAvalonia.UI.Controls;
-using Renci.SshNet;
 using Renci.SshNet.Common;
 
 namespace DataBridgeRework.ViewModels;
@@ -21,23 +20,19 @@ namespace DataBridgeRework.ViewModels;
 public sealed partial class MainWindowViewModel : ObservableRecipient
 {
     private readonly IExplorerViewModelFactory _tabsFactory;
-    private readonly ISftpClientService _sftpClientService;
-    private readonly FileSyncService _fileSyncService;
+    private readonly ISftpSyncManager _sftpSyncManager;
     
     public ObservableCollection<ExplorerViewModel> Tabs { get; init; } = new();
     [ObservableProperty] private ExplorerViewModel _selectedTab = null!;
 
-    public MainWindowViewModel(IExplorerViewModelFactory tabsFactory, ISftpClientService sftpClientService, FileSyncService fileSyncService)
+    public MainWindowViewModel(IExplorerViewModelFactory tabsFactory, ISftpSyncManager sftpSyncManager)
     {
         _tabsFactory = tabsFactory;
-        _sftpClientService = sftpClientService;
-        _fileSyncService = fileSyncService;
+        _sftpSyncManager = sftpSyncManager;
     }
 
     protected override void OnActivated()
     {
-        _fileSyncService.Enable();
-        
         Messenger.Register<MainWindowViewModel, NewTabMessage, CancellationToken>(this, CancellationToken.None,
             (r, m) =>
             {
@@ -77,7 +72,12 @@ public sealed partial class MainWindowViewModel : ObservableRecipient
         SelectedTab = savedTab;
     }
 
-    public async Task<bool> OpenConnectionDialogAsync(MainWindow window)
+    public void ClearSelf()
+    {
+        _sftpSyncManager.StopSessionAsync();
+    }
+    
+    public async Task<bool> OpenConnectionDialogAsync(MainWindow window, ILauncher launcher, IStorageProvider storageProvider)
     {
         ConnectionWindow connectionWindow = new()
         {
@@ -88,14 +88,15 @@ public sealed partial class MainWindowViewModel : ObservableRecipient
 
         if (connectionData == null) return false;
         
-        return await TryConnectClientAsync(connectionData, window);
+        return await TryConnectClientAsync(connectionData, window, launcher, storageProvider);
     }
 
-    private async Task<bool> TryConnectClientAsync(ServerConnectionData connectionData, MainWindow window)
+    private async Task<bool> TryConnectClientAsync(ServerConnectionData connectionData, MainWindow window, ILauncher launcher, IStorageProvider storageProvider)
     {
         try
         {
-            await _sftpClientService.ConnectAsync(connectionData);
+            if (_sftpSyncManager.IsSessionExist) await _sftpSyncManager.StopSessionAsync();
+            await _sftpSyncManager.StartSessionAsync(connectionData, launcher, storageProvider);
             
             Debug.WriteLine("Success connecting to the server");
             

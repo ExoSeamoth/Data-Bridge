@@ -126,7 +126,7 @@ public partial class ConnectionWindowViewModel : ObservableObject
 
     public void SaveConnectionsToJson()
     {
-        var jsonData = JsonSerializer.Serialize(SavedConnections, AppJsonSerializerContext.Default.IEnumerableServerConnectionData);
+        var jsonData = JsonSerializer.Serialize(SavedConnections, AppJsonSerializerContext.Default.ObservableCollectionServerConnectionData);
         File.WriteAllText(SAVE_CONNECTIONS_PATH, jsonData);
     }
 }

@@ -1,8 +1,6 @@
-using System;
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using DataBridgeRework.ViewModels;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
@@ -15,9 +13,11 @@ public partial class MainWindow : AppWindow
     {
         InitializeComponent();
         if (!Design.IsDesignMode) Loaded += OnMainWindowLoaded;
+        if (!Design.IsDesignMode) Closing += OnMainWindowClosing;
         TitleBar.ExtendsContentIntoTitleBar = true;
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
     }
+
 
     private void TabView_OnTabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
@@ -28,8 +28,8 @@ public partial class MainWindow : AppWindow
     private async void OnMainWindowLoaded(object? sender, RoutedEventArgs e)
     {
         var vm = DataContext as MainWindowViewModel;
-
-        if (await vm.OpenConnectionDialogAsync(this))
+        
+        if (await vm.OpenConnectionDialogAsync(this, Launcher, StorageProvider))
         {
             Debug.WriteLine("Successfully open connection dialog from start");
             vm.IsActive = true;
@@ -42,11 +42,18 @@ public partial class MainWindow : AppWindow
         }
     }
 
+    private void OnMainWindowClosing(object sender, WindowClosingEventArgs e)
+    {
+        var vm = DataContext as MainWindowViewModel;
+        
+        vm.ClearSelf();
+    }
+
     private async void OpenConnectionDialogRequest(object sender, RoutedEventArgs e)
     {
         var vm = DataContext as MainWindowViewModel;
 
-        if (!await vm.OpenConnectionDialogAsync(this))
+        if (!await vm.OpenConnectionDialogAsync(this, Launcher, StorageProvider))
         {
             Debug.WriteLine("Failed to open connection dialog");
         }

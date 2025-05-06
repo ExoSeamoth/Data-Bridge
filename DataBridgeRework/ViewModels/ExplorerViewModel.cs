@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Collections;
-using Avalonia.Controls;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataBridgeRework.Utils.Entries;
 using DataBridgeRework.Utils.Messages;
 using DataBridgeRework.Utils.Models;
-using DataBridgeRework.Utils.Services.SftpClientService;
+using DataBridgeRework.Utils.Services.SftpSyncManager;
 
 namespace DataBridgeRework.ViewModels;
 
 public sealed partial class ExplorerViewModel : ObservableRecipient
 {
-    private readonly ISftpClientService _sftpClientService;
+    // private readonly ISftpClientService _sftpClientService;
+    private readonly ISftpSyncManager _sftpSyncManager;
     
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(GoUpCommand))]
     private string _currentFullPath = string.Empty;
@@ -32,12 +31,18 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
 
     public ObservableStack<string> ForwardHistory { get; } = new();
 
-    public ExplorerViewModel(ISftpClientService sftpClientService)
+    public ExplorerViewModel(ISftpSyncManager sftpSyncManager)
     {
-        _sftpClientService = sftpClientService;
-        CurrentFullPath = _sftpClientService.GetWorkingDirectory();
+        _sftpSyncManager = sftpSyncManager;
+        CurrentFullPath = _sftpSyncManager.HomeDirectory;
         BackHistory.CollectionChanged += (_, __) => GoBackCommand.NotifyCanExecuteChanged();
         ForwardHistory.CollectionChanged += (_, __) => GoForwardCommand.NotifyCanExecuteChanged();
+        _sftpSyncManager.FileSynced += UpdateFiles;
+    }
+
+    private async void UpdateFiles(string filePath)
+    {
+        await Dispatcher.UIThread.InvokeAsync(() => LoadFilesCommand.Execute(CurrentFullPath));
     }
 
     public void NavigateTo(string fullPath)
@@ -50,7 +55,7 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
 
     public async Task OpenRemoteFile(string fullPath)
     {
-        throw new NotImplementedException();
+        await _sftpSyncManager.EditRemoteFileAsync(fullPath);
     }
 
     [RelayCommand]
@@ -63,7 +68,7 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
     private async Task LoadFiles(string path)
     {
         Files.Clear();
-        var newFiles = _sftpClientService.ListDirectoryAsync(path);
+        var newFiles = _sftpSyncManager.GetFilesAsync(path);
         await foreach (var file in newFiles) Files.Add(file);
     }
 
