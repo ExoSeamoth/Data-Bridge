@@ -7,29 +7,31 @@
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="515"
              x:DataType="vm:ExplorerViewModel"
-             x:Class="DataBridgeRework.Views.ExplorerView">
+             x:Class="DataBridgeRework.Views.ExplorerView"
+             Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid ColumnDefinitions="Auto *" RowDefinitions="Auto Auto *">
         <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
-              ColumnDefinitions="Auto *">
+              ColumnDefinitions="Auto *"
+              Background="{DynamicResource TabViewItemHeaderBackgroundSelected}">
 
             <fa:CommandBar Grid.Column="0"
                            DefaultLabelPosition="Right">
                 <fa:CommandBar.PrimaryCommands>
                     <fa:CommandBarButton IconSource="Back" IsCompact="True"
-                                         ToolTip.Tip="{Binding BackHistory.CurrentItem, StringFormat='Назад к &quot;{0}&quot;'}"
+                                         ToolTip.Tip="{Binding BackHistory.CurrentItem, StringFormat='Назад к &quot;{0}&quot;', Mode=OneWay}"
                                          Command="{Binding GoBackCommand}" />
                     <fa:CommandBarButton IconSource="Forward" IsCompact="True"
-                                         ToolTip.Tip="{Binding ForwardHistory.CurrentItem, StringFormat='Вперёд к &quot;{0}&quot;'}"
+                                         ToolTip.Tip="{Binding ForwardHistory.CurrentItem, StringFormat='Вперёд к &quot;{0}&quot;', Mode=OneWay}"
                                          Command="{Binding GoForwardCommand}" />
                     <fa:CommandBarButton IconSource="Up" IsCompact="True"
-                                         ToolTip.Tip="{Binding ForwardHistory.CurrentItem, StringFormat='Вверх к &quot;{0}&quot;'}"
+                                         ToolTip.Tip="{Binding ForwardHistory.CurrentItem, StringFormat='Вверх к &quot;{0}&quot;', Mode=OneWay}"
                                          Command="{Binding GoUpCommand}" />
                     <fa:CommandBarButton IconSource="Refresh" IsCompact="True"
                                          ToolTip.Tip="Обновить" />
                 </fa:CommandBar.PrimaryCommands>
             </fa:CommandBar>
-            
+
             <TextBox Classes="CommandBarElement" Grid.Column="1"
                      Height="10" Margin="0 0 5 0"
                      AcceptsReturn="False"
@@ -38,8 +40,7 @@
         </Grid>
 
         <fa:CommandBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                       DefaultLabelPosition="Right"
-                       Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+                       DefaultLabelPosition="Right">
             <fa:CommandBar.PrimaryCommands>
                 <fa:CommandBarElementContainer>
                     <DropDownButton Classes="CommandBarElement">
@@ -49,9 +50,12 @@
                         </StackPanel>
                         <DropDownButton.Flyout>
                             <fa:FAMenuFlyout>
-                                <fa:MenuFlyoutItem IconSource="{StaticResource FolderIcon}" Text="Директорию" />
-                                <fa:MenuFlyoutItem IconSource="{StaticResource File}" Text="Файл" />
-                                <fa:MenuFlyoutItem IconSource="{StaticResource SymlinkFile}" Text="Ссылку" />
+                                <fa:MenuFlyoutItem IconSource="{StaticResource FolderIcon}" Text="Директорию" 
+                                                   Command="{Binding CreateDirectoryCommand}"/>
+                                <fa:MenuFlyoutItem IconSource="{StaticResource File}" Text="Файл"
+                                                   Command="{Binding CreateFileCommand}"/>
+                                <fa:MenuFlyoutItem IconSource="{StaticResource SymlinkFile}" Text="Ссылку"
+                                                   Command="{Binding CreateSymbolicLinkCommand}"/>
                             </fa:FAMenuFlyout>
                         </DropDownButton.Flyout>
                     </DropDownButton>
@@ -63,27 +67,24 @@
                 <fa:CommandBarButton IconSource="Rename" IsCompact="True" />
                 <fa:CommandBarButton IconSource="Delete" IsCompact="True" />
                 <fa:CommandBarButton IconSource="Download" IsCompact="True" />
-                <!-- TODO: Не забыть удалить -->
-                <fa:CommandBarButton IconSource="Add" IsCompact="True" Command="{Binding CreateNewTabCommand}" />
             </fa:CommandBar.PrimaryCommands>
         </fa:CommandBar>
 
-        <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="Auto *" Margin="5 0"
-              Width="180"
-              Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Grid.Row="2" Grid.Column="0" RowDefinitions="Auto *"
+              Width="180" Margin="5 0">
             <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="2.5" VerticalAlignment="Stretch">
 
                 <!-- Home directory bookmark -->
                 <!-- TODO: Разобраться с преобразованием поля IsChecked -->
                 <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
-                             ToolTip.Tip="{Binding UserHomeDirectory}">
+                             ToolTip.Tip="{Binding UserHomeDirectory, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <fa:IconSourceElement Height="16" Width="16"
                                               IconSource="{StaticResource Home}" />
                         <TextBlock Text="Домашняя директория"
                                    Padding="0 0 10 0"
                                    MaxLines="1"
-                                   Width="{Binding $parent[StackPanel].Bounds.Width}"
+                                   Width="{Binding $parent[StackPanel].Bounds.Width, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                 </RadioButton>
@@ -92,7 +93,8 @@
                 <RadioButton Classes="Bookmarks" GroupName="Bookmarks"
                              IsChecked="{Binding CurrentFullPath,
                                          Converter={StaticResource StringsCompareConverter},
-                                         ConverterParameter='/' }"
+                                         ConverterParameter='/',
+                                         Mode=OneWay}"
                              ToolTip.Tip="Корневая директория">
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <fa:IconSourceElement Height="16" Width="16"
@@ -100,7 +102,7 @@
                         <TextBlock Text="Корневая директория"
                                    Padding="0 0 10 0"
                                    MaxLines="1"
-                                   Width="{Binding $parent[StackPanel].Bounds.Width}"
+                                   Width="{Binding $parent[StackPanel].Bounds.Width, Mode=OneWay}"
                                    TextTrimming="CharacterEllipsis" />
                     </StackPanel>
                 </RadioButton>
@@ -109,7 +111,7 @@
             </StackPanel>
 
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-                <fa:ItemsRepeater ItemsSource="{Binding Bookmarks}">
+                <fa:ItemsRepeater ItemsSource="{Binding Bookmarks, Mode=OneWay}">
                     <fa:ItemsRepeater.Layout>
                         <fa:StackLayout Orientation="Vertical" Spacing="2.5" />
                     </fa:ItemsRepeater.Layout>
@@ -121,10 +123,10 @@
                                     <fa:IconSourceElement Height="16" Width="16"
                                                           IconSource="{StaticResource FolderIcon}" />
                                     <TextBlock
-                                        Text="{Binding ., Converter={StaticResource FullPathToFolderNameConverter}}"
+                                        Text="{Binding ., Converter={StaticResource FullPathToFolderNameConverter}, Mode=OneWay}"
                                         Padding="0 0 10 0"
                                         MaxLines="1"
-                                        Width="{Binding $parent[StackPanel].Bounds.Width}"
+                                        Width="{Binding $parent[StackPanel].Bounds.Width, Mode=OneWay}"
                                         TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </RadioButton>
@@ -135,42 +137,42 @@
         </Grid>
 
         <Border Grid.Row="2" Grid.Column="1"
-                Padding="10 5 5 0"
-                Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
-            <Border CornerRadius="5 5 0 0"
-                    ClipToBounds="True">
-                <DataGrid Classes="FilesPresenter"
-                          ItemsSource="{Binding Files}"
-                          IsReadOnly="True"
-                          CanUserResizeColumns="True">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Имя" MaxWidth="270" Width="*" 
-                                                SortMemberPath="Name">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="5" Margin="5 0">
-                                        <fa:IconSourceElement
-                                            Height="16" Width="16"
-                                            VerticalAlignment="Center"
-                                            RenderOptions.BitmapBlendingMode="Unspecified"
-                                            IconSource="{Binding Type, Converter={StaticResource FileTypeToIconConverter}}" />
-                                        <TextBlock Text="{Binding Name}"
-                                                   BaselineOffset="0"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Дата изменения" Binding="{Binding LastWriteTime}" />
-                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" 
-                                            MinWidth="100"
-                                            Width="Auto"/>
-                        <DataGridTextColumn Header="Размер" Binding="{Binding Size}" />
-                        <DataGridTextColumn Header="Права доступа" Binding="{Binding Permissions}" 
-                                            Width="Auto"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Border>
+                Margin="10 5 5 0"
+                CornerRadius="5 5 0 0"
+                ClipToBounds="True">
+            <DataGrid Classes="FilesPresenter"
+                      x:Name="FilesPresenter"
+                      ItemsSource="{Binding Files}"
+                      CanUserResizeColumns="True"
+                      CellPointerPressed="FilesPresenter_SelectedFolderClicked">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Имя" MaxWidth="270" Width="*"
+                                            SortMemberPath="Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="5" Margin="5 0">
+                                    <fa:IconSourceElement
+                                        Height="16" Width="16"
+                                        VerticalAlignment="Center"
+                                        IconSource="{Binding Type, Converter={StaticResource FileTypeToIconConverter}, Mode=OneWay}" />
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                               BaselineOffset="0"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Дата изменения" Binding="{Binding LastWriteTime, Mode=OneWay}" 
+                                        IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Тип" Binding="{Binding Type, Mode=OneWay}"
+                                        MinWidth="100" Width="Auto" 
+                                        IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Размер" Binding="{Binding Size, Mode=OneWay}" />
+                    <DataGridTextColumn Header="Права доступа" Binding="{Binding Permissions, Mode=OneWay}"
+                                        Width="Auto" 
+                                        IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </Border>
     </Grid>
 

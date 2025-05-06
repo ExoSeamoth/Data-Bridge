@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,40 +15,57 @@ public sealed class SftpClientService : ISftpClientService
 {
     private SftpClient _client;
 
-    public Task ConnectAsync(ConnectionInfo connectionData, CancellationToken cancellationToken = default)
+    public Guid ConnectionId { get; private set; }
+
+    public Task ConnectAsync(ServerConnectionData connectionData, CancellationToken cancellationToken = default)
     {
         if (_client is { IsConnected: true }) return Task.CompletedTask;
 
-        _client = new SftpClient(connectionData);
-        
+        ConnectionId = connectionData.Id;
+
+        AuthenticationMethod authenticationMethod = connectionData.SecurityType switch
+        {
+            SecurityType.Password => new PasswordAuthenticationMethod(connectionData.UserName,
+                connectionData.Password),
+            SecurityType.SshKey => new PrivateKeyAuthenticationMethod(connectionData.UserName,
+                new PrivateKeyFile(connectionData.SshKeyPath, connectionData.SshKeyPhrase)),
+            _ => new NoneAuthenticationMethod(connectionData.UserName)
+        };
+
+        ConnectionInfo connectionInfo = new(connectionData.HostName, connectionData.Port, connectionData.UserName,
+            authenticationMethod);
+
+        _client = new SftpClient(connectionInfo);
+
         return _client.ConnectAsync(cancellationToken);
     }
 
     public Task DisconnectAsync(CancellationToken cancellationToken = default)
     {
-        if (_client is { IsConnected: true }) return Task.Run(() => _client.Disconnect(), cancellationToken);
-        
-        return Task.CompletedTask;
+        if (_client is not { IsConnected: true }) return Task.CompletedTask;
+
+        ConnectionId = Guid.Empty;
+        return Task.Run(() => _client.Disconnect(), cancellationToken);
     }
 
     public string GetWorkingDirectory()
     {
         if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
-        
+
         return _client.WorkingDirectory;
     }
-    
+
     public async IAsyncEnumerable<RemoteFileModel> ListDirectoryAsync(
         string path,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
         var remoteFileList = _client.ListDirectoryAsync(path, cancellationToken);
-        
+
         await foreach (var remoteFile in remoteFileList)
         {
             if (remoteFile.Name is "." or "..") continue;
-            
+
             var type = remoteFile switch
             {
                 { IsDirectory: true } => FileType.Directory,
@@ -56,12 +74,12 @@ public sealed class SftpClientService : ISftpClientService
                 _ => FileType.File
             };
 
-            var size = type switch
+            long? size = type switch
             {
                 FileType.File => remoteFile.Length,
-                _ => -1,
+                _ => null,
             };
-            
+
             RemoteFileModel file = new(
                 remoteFile.Name,
                 remoteFile.FullName,
@@ -82,7 +100,11 @@ public sealed class SftpClientService : ISftpClientService
         IProgress<double> progress = null,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
+        
+        FileStream fileStream = new(localPath, FileMode.Create);
+        
+        return Task.Run(() => _client.DownloadFile(remoteFilePath, fileStream), cancellationToken);
     }
 
     public Task UploadFileAsync(
@@ -92,36 +114,51 @@ public sealed class SftpClientService : ISftpClientService
         IProgress<double> progress = null,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
+
+        FileStream fileStream = new(localFilePath, FileMode.Open);
+        
+        return Task.Run(() => _client.UploadFile(fileStream, remotePath), cancellationToken);
     }
 
     public Task DeleteAsync(
         string remotePath,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
+
+        return _client.DeleteAsync(remotePath, cancellationToken);
     }
 
     public Task DeleteDirectoryRecursiveAsync(
         string remoteDirectoryPath,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
+
+        return _client.DeleteDirectoryAsync(remoteDirectoryPath, cancellationToken);
     }
 
     public bool Exists(
         string remotePath)
     {
         if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
-        
+
         return _client.Exists(remotePath);
     }
 
-    public Task CreateDirectoryAsync(
-        string remoteDirectoryPath,
-        CancellationToken cancellationToken = default)
+    public Task CreateDirectoryAsync(string remoteDirectoryPath, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
+
+        return _client.CreateDirectoryAsync(remoteDirectoryPath, cancellationToken);
+    }
+
+    public Task CreateFileAsync(string remoteFilePath, CancellationToken cancellationToken = default)
+    {
+        if (_client is not { IsConnected: true }) throw new SshConnectionException("Нет активного подключения.");
+
+        return Task.Run(() => _client.Create(remoteFilePath), cancellationToken);
     }
 
     public Task RenameAsync(
@@ -146,7 +183,13 @@ public sealed class SftpClientService : ISftpClientService
 
     private static string BuildPermissionsString(in SftpFileAttributes attributes)
     {
-        var typeChar = attributes.IsDirectory ? "d" : "-";
+        var typeChar = attributes switch
+        {
+            { IsDirectory: true } => 'd',
+            { IsSymbolicLink: true } => 'l',
+            { IsSocket: true } => 's',
+            _ => '-'
+        };
 
         var owner =
             $"{GetPermissionChar(attributes.OwnerCanRead, 'r')}" +

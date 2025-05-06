@@ -2,9 +2,11 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using CommunityToolkit.Extensions.DependencyInjection;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using DataBridgeRework.Utils.Factories;
+using DataBridgeRework.Utils.Services.FileSyncService;
 using DataBridgeRework.Utils.Services.SftpClientService;
 using DataBridgeRework.ViewModels;
 using DataBridgeRework.Views;
@@ -35,7 +37,6 @@ public sealed partial class App : Application
             Ioc.Default.ConfigureServices(provider);
 
             var vm = Ioc.Default.GetService<MainWindowViewModel>()!;
-            vm.IsActive = true;
 
             var view = Ioc.Default.GetService<MainWindow>()!;
             view.DataContext = vm;
@@ -47,6 +48,7 @@ public sealed partial class App : Application
     }
 
     [Singleton(typeof(SftpClientService), typeof(ISftpClientService))]
+    [Singleton(typeof(FileSyncService))]
     private static partial void ConfigureServices(IServiceCollection services);
 
     [Singleton(typeof(MainWindowViewModel))]

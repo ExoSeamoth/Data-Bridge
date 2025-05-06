@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using DataBridgeRework.ViewModels;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
@@ -28,15 +29,16 @@ public partial class MainWindow : AppWindow
     {
         var vm = DataContext as MainWindowViewModel;
 
-        if (!await vm.OpenConnectionDialogAsync(this))
+        if (await vm.OpenConnectionDialogAsync(this))
         {
-            Debug.WriteLine("Failed to open connection dialog from start");
-            Close();
+            Debug.WriteLine("Successfully open connection dialog from start");
+            vm.IsActive = true;
+            vm.AddTabCommand.Execute(null);
         }
         else
         {
-            Debug.WriteLine("Successfully open connection dialog from start");
-            vm.AddTabCommand.Execute(null);
+            Debug.WriteLine("Failed to open connection dialog from start");
+            Close();
         }
     }
 
@@ -45,8 +47,15 @@ public partial class MainWindow : AppWindow
         var vm = DataContext as MainWindowViewModel;
 
         if (!await vm.OpenConnectionDialogAsync(this))
+        {
             Debug.WriteLine("Failed to open connection dialog");
+        }
         else
+        {
             Debug.WriteLine("Successfully open connection dialog");
+            // TODO: В планах добавить сохранение информации про закладки
+            vm.Tabs.Clear();
+            vm.AddTabCommand.Execute(null);
+        }
     }
 }

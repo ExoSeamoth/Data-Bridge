@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DataBridgeRework.Utils.Factories;
 using DataBridgeRework.Utils.Messages;
 using DataBridgeRework.Utils.Models;
+using DataBridgeRework.Utils.Services.FileSyncService;
 using DataBridgeRework.Utils.Services.SftpClientService;
 using DataBridgeRework.Views;
 using FluentAvalonia.UI.Controls;
@@ -21,19 +22,22 @@ public sealed partial class MainWindowViewModel : ObservableRecipient
 {
     private readonly IExplorerViewModelFactory _tabsFactory;
     private readonly ISftpClientService _sftpClientService;
+    private readonly FileSyncService _fileSyncService;
+    
+    public ObservableCollection<ExplorerViewModel> Tabs { get; init; } = new();
     [ObservableProperty] private ExplorerViewModel _selectedTab = null!;
 
-    public MainWindowViewModel(IExplorerViewModelFactory tabsFactory, ISftpClientService sftpClientService)
+    public MainWindowViewModel(IExplorerViewModelFactory tabsFactory, ISftpClientService sftpClientService, FileSyncService fileSyncService)
     {
         _tabsFactory = tabsFactory;
         _sftpClientService = sftpClientService;
+        _fileSyncService = fileSyncService;
     }
-
-    public ObservableCollection<ExplorerViewModel> Tabs { get; init; } = new();
-
 
     protected override void OnActivated()
     {
+        _fileSyncService.Enable();
+        
         Messenger.Register<MainWindowViewModel, NewTabMessage, CancellationToken>(this, CancellationToken.None,
             (r, m) =>
             {
@@ -91,35 +95,7 @@ public sealed partial class MainWindowViewModel : ObservableRecipient
     {
         try
         {
-            AuthenticationMethod authenticationMethod = connectionData.SecurityType switch
-            {
-                SecurityType.Password => new PasswordAuthenticationMethod(connectionData.UserName,
-                    connectionData.Password),
-                SecurityType.SshKey => new PrivateKeyAuthenticationMethod(connectionData.UserName,
-                    new PrivateKeyFile(connectionData.SshKeyPath, connectionData.SshKeyPhrase)),
-                _ => new NoneAuthenticationMethod(connectionData.UserName)
-            };
-
-            // AuthenticationMethod authenticationMethod = new NoneAuthenticationMethod(connectionData.UserName);
-            //
-            // switch (connectionData.SecurityType)
-            // {
-            //     case SecurityType.Password:
-            //         authenticationMethod = new PasswordAuthenticationMethod(connectionData.UserName, connectionData.Password);
-            //         break;
-            //     case SecurityType.SshKey:
-            //         PrivateKeyFile key = new(connectionData.SshKeyPath, connectionData.SshKeyPhrase);
-            //         authenticationMethod = new PrivateKeyAuthenticationMethod(connectionData.UserName, key);
-            //         break;
-            //     default:
-            //         new NoneAuthenticationMethod(connectionData.UserName);
-            //         break;
-            // }
-
-            ConnectionInfo connectionInfo = new(connectionData.HostName, connectionData.Port, connectionData.UserName,
-                authenticationMethod);
-
-            await _sftpClientService.ConnectAsync(connectionInfo);
+            await _sftpClientService.ConnectAsync(connectionData);
             
             Debug.WriteLine("Success connecting to the server");
             
@@ -146,7 +122,7 @@ public sealed partial class MainWindowViewModel : ObservableRecipient
         return false;
     }
 
-    private async Task ShowErrorDialogAsync(MainWindow window, string header, string message)
+    public static async Task ShowErrorDialogAsync(MainWindow window, string header, string message)
     {
         var dialog = new TaskDialog
         {

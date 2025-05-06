@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Collections;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DataBridgeRework.Utils.Entries;
@@ -16,26 +18,6 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
 {
     private readonly ISftpClientService _sftpClientService;
     
-    // private string _currentFullPath = string.Empty;
-    // public string CurrentFullPath
-    // {
-    //     get => _currentFullPath;
-    //     set
-    //     {
-    //         if (!_sftpClientService.Exists(value) || _currentFullPath == value)
-    //         {
-    //             OnPropertyChanged();
-    //             return;
-    //         }
-    //
-    //         if (!SetProperty(ref _currentFullPath, value)) return;
-    //
-    //         GoUpCommand.NotifyCanExecuteChanged();
-    //         LoadFilesCommand.ExecuteAsync(value);
-    //     }
-    // }
-
-
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(GoUpCommand))]
     private string _currentFullPath = string.Empty;
     partial void OnCurrentFullPathChanged(string value) => LoadFilesCommand.ExecuteAsync(value);
@@ -58,17 +40,7 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
         ForwardHistory.CollectionChanged += (_, __) => GoForwardCommand.NotifyCanExecuteChanged();
     }
 
-    
-    //
-    // partial void OnInputPathChanging(string oldValue, string newValue)
-    // {
-    //     if (oldValue == newValue) return;
-    //     
-    //     if (!_sftpClientService.Exists(newValue))
-    //         InputPath = oldValue;
-    // }
-
-    private void NavigateTo(string fullPath)
+    public void NavigateTo(string fullPath)
     {
         BackHistory.Push(CurrentFullPath);
         ForwardHistory.Clear();
@@ -76,11 +48,15 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
         CurrentFullPath = fullPath;
     }
 
-    [RelayCommand]
-    private void CreateNewTab(string fullPath)
+    public async Task OpenRemoteFile(string fullPath)
     {
-        var path = $"/test/folder{Random.Shared.Next(0, 100).ToString()}";
-        Messenger.Send(new NewTabMessage(path), CancellationToken.None);
+        throw new NotImplementedException();
+    }
+
+    [RelayCommand]
+    private void OpenFolderInNewTab(string fullPath)
+    {
+        Messenger.Send(new NewTabMessage(fullPath), CancellationToken.None);
     }
 
     [RelayCommand]
@@ -120,8 +96,28 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
     private void GoUp()
     {
         string parentPath = Path.GetDirectoryName(CurrentFullPath)?.Replace("\\", "/") ?? "/";
-        NavigateTo(parentPath);
+        BackHistory.Push(CurrentFullPath);
+
+        CurrentFullPath = parentPath;
+        // NavigateTo(parentPath);
     }
 
     private bool CanGoUp() => CurrentFullPath.Length > 1;
+
+    [RelayCommand]
+    private void CreateDirectory()
+    {
+    }
+
+    [RelayCommand]
+    private void CreateFile()
+    {
+        
+    }
+
+    [RelayCommand]
+    private void CreateSymbolicLink()
+    {
+        
+    }
 }
