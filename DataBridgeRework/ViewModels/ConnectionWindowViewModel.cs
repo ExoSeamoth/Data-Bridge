@@ -16,12 +16,6 @@ public partial class ConnectionWindowViewModel : ObservableObject
 {
     private const string SAVE_CONNECTIONS_PATH = "connections.json";
 
-    private readonly JsonSerializerOptions jsonOptions = new()
-    {
-        WriteIndented = true,
-        // Converters = { new ServerConnectionDataJsonConverter() }
-    };
-
     [ObservableProperty] private int _selectedConnectionIndex = -1;
 
     [ObservableProperty]
@@ -122,7 +116,7 @@ public partial class ConnectionWindowViewModel : ObservableObject
         if (File.Exists(SAVE_CONNECTIONS_PATH))
         {
             var jsonData = File.ReadAllText(SAVE_CONNECTIONS_PATH);
-            return JsonSerializer.Deserialize<List<ServerConnectionData>>(jsonData);
+            return JsonSerializer.Deserialize(jsonData, AppJsonSerializerContext.Default.IEnumerableServerConnectionData);
         }
 
         File.WriteAllText(SAVE_CONNECTIONS_PATH, "[\n]");
@@ -132,7 +126,7 @@ public partial class ConnectionWindowViewModel : ObservableObject
 
     public void SaveConnectionsToJson()
     {
-        var jsonData = JsonSerializer.Serialize(SavedConnections, jsonOptions);
+        var jsonData = JsonSerializer.Serialize(SavedConnections, AppJsonSerializerContext.Default.IEnumerableServerConnectionData);
         File.WriteAllText(SAVE_CONNECTIONS_PATH, jsonData);
     }
 }
