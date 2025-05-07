@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:DataBridge.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="560"
+        Width="1000" Height="560"
+        x:Class="DataBridge.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/data-bridge-logo.ico"
+        Title="Data Bridge Rework"
+        WindowStartupLocation="CenterScreen">
+    <fa:TabView x:Name="TabView"
+                Classes="TabsPresenter"
+                TabItems="{Binding Tabs}"
+                SelectedItem="{Binding SelectedTab}"
+                AddTabButtonCommand="{Binding AddTabCommand}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                TabCloseRequested="TabView_OnTabCloseRequested">
+        <fa:TabView.TabItemTemplate>
+            <DataTemplate x:DataType="vm:ExplorerViewModel">
+                <fa:TabViewItem
+                    Header="{Binding CurrentFullPath, Converter={StaticResource FullPathToFolderNameConverter}}"
+                    IconSource="{StaticResource FolderIcon}"
+                    ToolTip.Tip="{Binding CurrentFullPath}"
+                    Content="{Binding .}">
+                    <fa:TabViewItem.ContextFlyout>
+                        <fa:FAMenuFlyout Placement="Top">
+                            <fa:MenuFlyoutItem IconSource="Cancel" Text="Закрыть вкладку"
+                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveTabCommand}"
+                                               CommandParameter="{Binding .}" />
+                            <fa:MenuFlyoutItem Text="Закрыть остальные вкладки"
+                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ClearTabsExceptCommand}"
+                                               CommandParameter="{Binding .}" />
+                            <fa:MenuFlyoutItem IconSource="ClearSelection" Text="Дублировать вкладку"
+                                               Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).AddTabCommand}"
+                                               CommandParameter="{Binding .}" />
+                        </fa:FAMenuFlyout>
+                    </fa:TabViewItem.ContextFlyout>
+                </fa:TabViewItem>
+            </DataTemplate>
+        </fa:TabView.TabItemTemplate>
+
+
+        <fa:TabView.TabStripHeader>
+            <Button VerticalAlignment="Bottom"
+                    Margin="5 0 0 3"
+                    Width="35" Height="25"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OpenConnectionDialogRequest">
+                <fa:SymbolIcon Symbol="Remote" />
+            </Button>
+        </fa:TabView.TabStripHeader>
+
+        <fa:TabView.TabStripFooter>
+            <Rectangle Width="140" Height="40" />
+        </fa:TabView.TabStripFooter>
+    </fa:TabView>
+</Window>

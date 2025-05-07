@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>True</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>Assets\data-bridge-logo.ico</ApplicationIcon>
+
+        <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
+        <PublishTrimmed>true</PublishTrimmed>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AsyncAwaitBestPractices" Version="9.0.0" />
+        <PackageReference Include="Avalonia" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Svg.Skia" Version="11.2.7.1"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.0" />
+        <PackageReference Include="CommunityToolkit.Labs.Extensions.DependencyInjection" Version="0.1.250319-build.2093"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageReference Include="FluentAvaloniaUI" Version="2.4.0-preview1"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3"/>
+        <PackageReference Include="SSH.NET" Version="2024.2.0"/>
+    </ItemGroup>
+</Project>

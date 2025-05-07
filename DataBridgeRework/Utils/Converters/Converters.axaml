@@ -1,8 +1,0 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:converters="clr-namespace:DataBridgeRework.Utils.Converters">
-    <converters:FullPathToFolderNameConverter x:Key="FullPathToFolderNameConverter" />
-    <converters:SecurityTypeToBoolConverter x:Key="SecurityTypeToBoolConverter" />
-    <converters:StringsCompareConverter x:Key="StringsCompareConverter" />
-    <converters:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
-</ResourceDictionary>
