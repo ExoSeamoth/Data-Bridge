@@ -17,13 +17,14 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
     // private readonly ISftpClientService _sftpClientService;
     private readonly ISftpSyncManager _sftpSyncManager;
     
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(GoUpCommand))]
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(GoUpCommand))] [NotifyCanExecuteChangedFor(nameof(NavigateToCommand))]
     private string _currentFullPath = string.Empty;
     partial void OnCurrentFullPathChanged(string value) => LoadFilesCommand.ExecuteAsync(value);
     
     [ObservableProperty] private string _userHomeDirectory = string.Empty;
 
-    public static ObservableCollection<string> Bookmarks { get; set; }
+    public static ObservableCollection<string> Bookmarks { get; set; } = [];
 
     public ObservableCollection<RemoteFileModel> Files { get; } = new();
 
@@ -34,23 +35,18 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
     public ExplorerViewModel(ISftpSyncManager sftpSyncManager)
     {
         _sftpSyncManager = sftpSyncManager;
-        CurrentFullPath = _sftpSyncManager.HomeDirectory;
+        UserHomeDirectory = _sftpSyncManager.HomeDirectory; 
+        CurrentFullPath = UserHomeDirectory;
         BackHistory.CollectionChanged += (_, __) => GoBackCommand.NotifyCanExecuteChanged();
         ForwardHistory.CollectionChanged += (_, __) => GoForwardCommand.NotifyCanExecuteChanged();
-        _sftpSyncManager.FileSynced += UpdateFiles;
+        Bookmarks.CollectionChanged += (_, __) => AddBookmarkCommand.NotifyCanExecuteChanged();
+        
+        _sftpSyncManager.RemoteUpdated += UpdateFiles;
     }
 
     private async void UpdateFiles(string filePath)
     {
         await Dispatcher.UIThread.InvokeAsync(() => LoadFilesCommand.Execute(CurrentFullPath));
-    }
-
-    public void NavigateTo(string fullPath)
-    {
-        BackHistory.Push(CurrentFullPath);
-        ForwardHistory.Clear();
-        
-        CurrentFullPath = fullPath;
     }
 
     public async Task OpenRemoteFile(string fullPath)
@@ -72,6 +68,17 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
         await foreach (var file in newFiles) Files.Add(file);
     }
 
+    [RelayCommand(CanExecute = nameof(CanNavigateTo))]
+    private void NavigateTo(string fullPath)
+    {
+        BackHistory.Push(CurrentFullPath);
+        ForwardHistory.Clear();
+        
+        CurrentFullPath = fullPath;
+    }
+    
+    private bool CanNavigateTo(string fullPath) => CurrentFullPath != fullPath;
+
     [RelayCommand(CanExecute = nameof(CanGoBack))]
     private void GoBack()
     {
@@ -79,7 +86,6 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
         ForwardHistory.Push(CurrentFullPath);
 
         CurrentFullPath = path;
-        // NavigateTo(path, true);
     }
 
     private bool CanGoBack() => BackHistory.Count > 0;
@@ -92,7 +98,6 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
         BackHistory.Push(CurrentFullPath);
         
         CurrentFullPath = path;
-        // NavigateTo(path, true);
     }
 
     private bool CanGoForward() => ForwardHistory.Count > 0;
@@ -104,7 +109,6 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
         BackHistory.Push(CurrentFullPath);
 
         CurrentFullPath = parentPath;
-        // NavigateTo(parentPath);
     }
 
     private bool CanGoUp() => CurrentFullPath.Length > 1;
@@ -125,4 +129,12 @@ public sealed partial class ExplorerViewModel : ObservableRecipient
     {
         
     }
+    
+    [RelayCommand(CanExecute = nameof(CanAddBookmark))]
+    private void AddBookmark(string fullPath) => Bookmarks.Add(fullPath);
+    
+    private bool CanAddBookmark(string fullPath) => !Bookmarks.Contains(fullPath);
+    
+    [RelayCommand]
+    private void RemoveBookmark(string fullPath) => Bookmarks.Remove(fullPath);
 }

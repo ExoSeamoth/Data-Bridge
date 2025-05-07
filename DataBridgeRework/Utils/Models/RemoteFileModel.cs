@@ -11,6 +11,7 @@ public sealed record RemoteFileModel(
     string Permissions
 ): IComparable<RemoteFileModel>
 {
+    public bool IsDirectory => Type == FileType.Directory;
     public int CompareTo(RemoteFileModel other)
     {
         if(other is null) return 1;

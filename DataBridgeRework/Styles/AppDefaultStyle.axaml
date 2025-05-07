@@ -34,8 +34,8 @@
                 </DataGrid>
 
                 <StackPanel Grid.Row="3" Spacing="5">
-                    <RadioButton Classes="Bookmarks" GroupName="Bookmarks" IsChecked="True" Content="РадиоТест1" />
-                    <RadioButton Classes="Bookmarks" GroupName="Bookmarks" IsChecked="False" Content="РадиоТест2" />
+                    <RadioButton IsEnabled="False" Classes="Bookmarks" GroupName="Bookmarks" Content="РадиоТест1" />
+                    <RadioButton Classes="Bookmarks" GroupName="Bookmarks" Content="РадиоТест2" />
                     <ListBoxItem Content="Test" IsSelected="True" />
                     <ListBoxItem Content="Test2" IsSelected="False" />
                 </StackPanel>
@@ -141,6 +141,7 @@
         <Setter Property="ToolTip.VerticalOffset" Value="5" />
         <Setter Property="ToolTip.ShowDelay" Value="700" />
         <Setter Property="ToolTip.BetweenShowDelay" Value="-1" />
+        <Setter Property="ToolTip.ShowOnDisabled" Value="True" />
 
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="FontFamily" Value="{DynamicResource ContentControlThemeFontFamily}" />
@@ -153,7 +154,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="MinWidth" Value="{DynamicResource ListViewItemMinWidth}" />
         <Setter Property="MinHeight" Value="{DynamicResource ListViewItemMinHeight}" />
-
+        
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
@@ -193,11 +194,6 @@
             </ControlTemplate>
         </Setter>
 
-        <Style Selector="^:disabled">
-            <!-- There's no Disabled brush for LVI, so just dim opacity -->
-            <Setter Property="Opacity" Value="0.5" />
-        </Style>
-
         <Style Selector="^:pointerover">
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundPointerOver}" />
@@ -216,7 +212,8 @@
             </Style>
         </Style>
 
-        <Style Selector="^:checked">
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="1"/>
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelected}" />
             </Style>
@@ -233,8 +230,8 @@
             <Style Selector="^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Foreground" Value="{DynamicResource ListViewItemForegroundSelected}" />
             </Style>
-
-
+        
+        
             <Style Selector="^:pointerover">
                 <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelectedPointerOver}" />
@@ -246,7 +243,7 @@
                     <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPointerOverBrush}" />
                 </Style>
             </Style>
-
+        
             <Style Selector="^:pressed">
                 <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="Background" Value="{DynamicResource ListViewItemBackgroundSelectedPressed}" />
@@ -256,13 +253,8 @@
                 </Style>
                 <Style Selector="^ /template/ Rectangle#SelectionIndicator">
                     <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorPressedBrush}" />
-                    <!-- TODO: Uncomment when Avalonia fixes selection to work on pointer up -->
                     <Setter Property="RenderTransform" Value="scaleY(0.5)" />
                 </Style>
-            </Style>
-
-            <Style Selector="^:disabled /template/ Rectangle#SelectionIndicator">
-                <Setter Property="Fill" Value="{DynamicResource ListViewItemSelectionIndicatorDisabledBrush}" />
             </Style>
         </Style>
     </Style>

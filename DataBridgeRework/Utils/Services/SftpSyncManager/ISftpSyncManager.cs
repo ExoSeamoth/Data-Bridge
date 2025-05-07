@@ -16,7 +16,7 @@ public interface ISftpSyncManager : IAsyncDisposable
 
     public delegate void FileSyncedEventHandler(string filePath);
 
-    public event FileSyncedEventHandler FileSynced;
+    public event FileSyncedEventHandler RemoteUpdated;
 
     public Task StartSessionAsync(
         ServerConnectionData connectionData,

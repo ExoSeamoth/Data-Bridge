@@ -29,7 +29,7 @@ public sealed class SftpSyncManager : ISftpSyncManager
     public bool IsSessionExist => _client is not null;
 
     public delegate void FileSyncedEventHandler(string filePath);
-    public event ISftpSyncManager.FileSyncedEventHandler FileSynced;
+    public event ISftpSyncManager.FileSyncedEventHandler RemoteUpdated;
 
     public SftpSyncManager()
     {
@@ -215,7 +215,7 @@ public sealed class SftpSyncManager : ISftpSyncManager
 
     private void OnFileSynced(string filePath)
     {
-        FileSynced?.Invoke(filePath);
+        RemoteUpdated?.Invoke(filePath);
     }
 
     private static string BuildPermissionsString(SftpFileAttributes attributes)

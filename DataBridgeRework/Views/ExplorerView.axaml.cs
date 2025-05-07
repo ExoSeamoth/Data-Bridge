@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
 using DataBridgeRework.Utils.Models;
 using DataBridgeRework.ViewModels;
 
@@ -29,7 +30,7 @@ public partial class ExplorerView : UserControl
         switch (remoteFile.Type)
         {
             case FileType.Directory:
-                vm.NavigateTo(remoteFile.FullPath);
+                vm.NavigateToCommand.Execute(remoteFile.FullPath);
                 break;
             case FileType.File:
                 await vm.OpenRemoteFile(remoteFile.FullPath);
